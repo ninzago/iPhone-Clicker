@@ -1,104 +1,99 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html id="gameRoot">
 <head>
-    <!-- Yandex Games SDK -->
+    <!-- Локальный SDK loader -->
     <script src="sdk.js"></script>
-    <script>
-        // Инициализация SDK с правильной обработкой
-        (function() {
-            window.YaGames.init()
-                .then(ysdk => {
-                    console.log('Yandex SDK initialized successfully');
-                    window.ysdk = ysdk;
-                    
-                    // Отправляем событие gameReady после загрузки игры
-                    if (ysdk.features && ysdk.features.GameplayAPI) {
-                        ysdk.features.GameplayAPI.gameReady();
-                    }
-                    
-                    // Определяем язык и передаём в игру
-                    const lang = ysdk.environment.i18n.lang;
-                    console.log('Current language:', lang);
-                    
-                    // Создаём событие для передачи языка в игру
-                    window.dispatchEvent(new CustomEvent('yandexLanguage', { 
-                        detail: { language: lang }
-                    }));
-                    
-                    // Загружаем сохранённый прогресс
-                    ysdk.getPlayerData()
-                        .then(data => {
-                            console.log('Loaded player data:', data);
-                            if (data && Object.keys(data).length > 0) {
-                                window.dispatchEvent(new CustomEvent('yandexLoadData', { 
-                                    detail: { data: data }
-                                }));
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error loading player data:', error);
-                        });
-                })
-                .catch(error => {
-                    console.error('Yandex SDK initialization failed:', error);
-                });
-        })();
-    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iPhone Clicker</title>
+    <title>iPhone Clicker — Боковое меню</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="store-container">
-        <div class="store-header">
-            <h1>IPHONE CLICKER</h1> <!-- Изменено название для единообразия -->
-        </div>
+    <div class="game-layout">
+        <!-- ОСНОВНАЯ ИГРОВАЯ ЗОНА (ЛЕВАЯ) -->
+        <div class="main-area">
+            <div class="store-header">
+                <h1 id="gameTitle">IPHONE CLICKER</h1>
+            </div>
 
-        <div class="row-x2-balance">
-            <button class="x2-button" id="buyX2">x2</button>
-            <div class="balance-box">
-                <span class="balance-label">Б</span>
-                <span class="balance-value" id="balanceDisplay">0</span>
+            <!-- Строка баланса (кнопка x2 удалена) -->
+            <div class="row-balance">
+                <div class="balance-box">
+                    <span class="balance-label" id="balanceLabel">Б</span>
+                    <span class="balance-value" id="balanceDisplay">0</span>
+                </div>
+            </div>
+
+            <div class="auto-row">
+                <div class="auto-label" id="autoLabel">⏱ Б. Сек. <span id="autoIncomeDisplay">0</span></div>
+                <div class="auto-value" id="autoRateDisplay">0/сек</div>
+            </div>
+
+            <div class="iphone-click-area" id="clickerMain">
+                <div class="iphone-model-name" id="currentModelName">iPhone 6</div>
+                <img class="iphone-image" id="currentModelImage" src="images/iphone6.jpg" alt="iPhone" draggable="false">
+            </div>
+
+            <div class="level-panel">
+                <div class="level-text" id="levelDisplay">Уровень 1</div>
+                <div class="next-model" id="nextModelDisplay">→ iPhone 6s</div>
+            </div>
+
+            <div class="footer-note" id="footerNote">
+                кликай по айфону — копи на новый уровень
             </div>
         </div>
 
-        <div class="auto-row">
-            <div class="auto-label">⏱ Б. Сек. <span id="autoIncomeDisplay">0</span></div>
-            <div class="auto-value" id="autoRateDisplay">0/сек</div>
-        </div>
-
-        <div class="iphone-click-area" id="clickerMain">
-            <div class="iphone-model-name" id="currentModelName">iPhone 6</div>
-            <img class="iphone-image" id="currentModelImage" src="images/iphone6.jpg" alt="iPhone" draggable="false">
-        </div>
-
-        <div class="shop-grid" id="shopGrid"></div>
-
-        <div class="level-panel">
-            <div class="level-text" id="levelDisplay">Уровень 1</div>
-            <div class="next-model" id="nextModelDisplay">→ iPhone 6s</div>
-        </div>
-
-        <div class="footer-note">
-            кликай по айфону — копи на новый уровень
+        <!-- БОКОВОЕ МЕНЮ УЛУЧШЕНИЙ (ПРАВАЯ ЧАСТЬ) -->
+        <div class="upgrades-sidebar">
+            <div class="sidebar-header">
+                <span>⚡</span> УЛУЧШЕНИЯ <span>🛠️</span>
+            </div>
+            <div class="shop-list" id="shopList">
+                <!-- сюда будут динамически добавляться карточки улучшений -->
+            </div>
         </div>
     </div>
 
-    <!-- Уведомление о завершении (появляется при достижении iPhone 17 Pro) -->
+    <!-- Уведомление о завершении игры -->
     <div id="completionNotification" class="notification hidden">
         <div class="notification-content">
             <span class="close-btn" id="closeNotification">&times;</span>
-            <h2>🎉 Ранний доступ</h2>
+            <h2>🎉 Поздравляем!</h2>
             <p>Вы достигли последней модели — <strong>iPhone 17 Pro</strong>!</p>
-            <p>Это предварительная версия игры. Если у вас есть идеи для новых айфонов или улучшений, свяжитесь с разработчиком:</p>
+            <p>Спасибо за прохождение!</p>
             <div class="contacts">
-                <a href="#" target="_blank" id="discordLink">Discord (В разработке)</a>
-                <a href="https://t.me/ClickerRazrab" target="_blank" id="telegramLink">Telegram</a> <!-- Исправлена ссылка -->
+                <span class="thanks-text">✨ Спасибо за игру! ✨</span>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
+    
+    <!-- Фикс для i18n: устанавливаем язык в HTML-тег -->
+    <script>
+        function setHtmlLang(lang) {
+            if (lang && document.documentElement) {
+                document.documentElement.lang = lang;
+                console.log('🌐 HTML lang set to:', lang);
+            }
+        }
+        
+        if (window.ysdk) {
+            try {
+                const lang = window.ysdk.environment.i18n.lang;
+                setHtmlLang(lang);
+            } catch(e) {}
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.ysdk && window.ysdk.environment) {
+                    clearInterval(checkInterval);
+                    const lang = window.ysdk.environment.i18n.lang;
+                    setHtmlLang(lang);
+                }
+            }, 100);
+        }
+    </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 (function() {
-    // ------------------------------------------------------------
-    // НАСТРОЙКА МОДЕЛЕЙ iPhone
-    // ------------------------------------------------------------
+    console.log('🚀 iPhone Clicker — с анимацией сжатия телефона');
+
+    // ----- МОДЕЛИ iPhone -----
     const models = [
         { name: 'iPhone 6', image: 'images/iphone6.jpg' },
         { name: 'iPhone 7', image: 'images/iphone7.jpg' },
@@ -18,135 +18,128 @@
         { name: 'iPhone 17 Pro', image: 'images/iphone17 pro.jpg' }
     ];
 
-    // ---------- АВТОМАТИЧЕСКОЕ СОЗДАНИЕ ПОРОГОВ (СБАЛАНСИРОВАННЫЙ РОСТ) ----------
-    // Каждый следующий уровень требует в 2 раза больше
-    // Начальное требование: 100 для 2-го уровня
-    const thresholds = [];
-    const baseRequirement = 100; // Можно настроить это значение для баланса
-    
-    for (let i = 0; i < models.length; i++) {
-        if (i === 0) {
-            thresholds.push(0); // 1-й уровень: 0
-        } else {
-            // Формула: baseRequirement * 2^(i-1)
-            // i=1 (2 ур.): 100 * 2^0 = 100
-            // i=2 (3 ур.): 100 * 2^1 = 200
-            // i=3 (4 ур.): 100 * 2^2 = 400
-            // i=4 (5 ур.): 100 * 2^3 = 800 и т.д.
-            thresholds.push(baseRequirement * Math.pow(2, i - 1));
-        }
+    // ПОРОГИ ДЛЯ УРОВНЕЙ
+    const thresholds = [0];
+    const baseRequirement = 500;
+    for (let i = 1; i < models.length; i++) {
+        thresholds.push(baseRequirement * Math.pow(2, i - 1));
     }
-    
-    console.log('Требования к уровням (каждый следующий в 2 раза больше):', thresholds);
 
-    // ---------- УЛУЧШЕНИЯ (11 штук, макс. 2 покупки) ----------
+    // УЛУЧШЕНИЯ (полный список)
     const upgrades = [
-        { name: 'Множитель I', basePrice: 50, price: 50, type: 'multiplier', unlocked: true, count: 0, maxCount: 2 },
-        { name: 'Генератор I', basePrice: 40, price: 40, type: 'auto', unlocked: true, count: 0, maxCount: 2 },
-        { name: 'Усилитель клика I', basePrice: 80, price: 80, type: 'clickAdd', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Генератор II', basePrice: 120, price: 120, type: 'auto', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Множитель II', basePrice: 150, price: 150, type: 'multiplier', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Усилитель клика II', basePrice: 200, price: 200, type: 'clickAdd', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Генератор III', basePrice: 280, price: 280, type: 'auto', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Множитель III', basePrice: 350, price: 350, type: 'multiplier', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Усилитель клика III', basePrice: 450, price: 450, type: 'clickAdd', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Генератор IV', basePrice: 600, price: 600, type: 'auto', unlocked: false, count: 0, maxCount: 2 },
-        { name: 'Множитель IV', basePrice: 800, price: 800, type: 'multiplier', unlocked: false, count: 0, maxCount: 2 }
+        { name: 'Множитель I', basePrice: 100, price: 100, type: 'multiplier', unlocked: true, count: 0, maxCount: 2, emoji: '⚡' },
+        { name: 'Генератор I', basePrice: 100, price: 100, type: 'auto', unlocked: true, count: 0, maxCount: 2, emoji: '🤖' },
+        { name: 'Усилитель I', basePrice: 125, price: 125, type: 'clickAdd', unlocked: false, count: 0, maxCount: 2, emoji: '💪' },
+        { name: 'Генератор II', basePrice: 150, price: 150, type: 'auto', unlocked: false, count: 0, maxCount: 2, emoji: '⚙️' },
+        { name: 'Множитель II', basePrice: 250, price: 250, type: 'multiplier', unlocked: false, count: 0, maxCount: 2, emoji: '🔥' },
+        { name: 'Усилитель II', basePrice: 300, price: 300, type: 'clickAdd', unlocked: false, count: 0, maxCount: 2, emoji: '✨' },
+        { name: 'Генератор III', basePrice: 400, price: 400, type: 'auto', unlocked: false, count: 0, maxCount: 2, emoji: '🚀' },
+        { name: 'Множитель III', basePrice: 500, price: 500, type: 'multiplier', unlocked: false, count: 0, maxCount: 2, emoji: '💎' },
+        { name: 'Усилитель III', basePrice: 550, price: 550, type: 'clickAdd', unlocked: false, count: 0, maxCount: 2, emoji: '👑' },
+        { name: 'Генератор IV', basePrice: 750, price: 750, type: 'auto', unlocked: false, count: 0, maxCount: 2, emoji: '🏭' },
+        { name: 'Множитель IV', basePrice: 1000, price: 1000, type: 'multiplier', unlocked: false, count: 0, maxCount: 2, emoji: '⭐' }
     ];
 
-    // ---------- Переменные игры ----------
     let balance = 0;
     let clickMultiplier = 1;
     let clickAdd = 0;
     let autoIncome = 0;
     let currentLevel = 1;
     let gameCompletedNotified = false;
+    let ysdk = null;
+    let isGameplayActive = false;
 
-    // ---------- DOM элементы ----------
+    // DOM элементы
     const balanceDisplay = document.getElementById('balanceDisplay');
-    const autoIncomeDisplay = document.getElementById('autoIncomeDisplay');
+    const autoIncomeDisplaySpan = document.getElementById('autoIncomeDisplay');
     const autoRateDisplay = document.getElementById('autoRateDisplay');
-    const currentModelName = document.getElementById('currentModelName');
-    const currentModelImage = document.getElementById('currentModelImage');
-    const levelDisplay = document.getElementById('levelDisplay');
-    const nextModelDisplay = document.getElementById('nextModelDisplay');
-    const shopGrid = document.getElementById('shopGrid');
-    const clickerMain = document.getElementById('clickerMain');
-    const buyX2 = document.getElementById('buyX2');
+    const currentModelNameSpan = document.getElementById('currentModelName');
+    const currentModelImg = document.getElementById('currentModelImage');
+    const levelDisplaySpan = document.getElementById('levelDisplay');
+    const nextModelSpan = document.getElementById('nextModelDisplay');
+    const clickerArea = document.getElementById('clickerMain');
+    const notificationDiv = document.getElementById('completionNotification');
+    const closeNotifBtn = document.getElementById('closeNotification');
+    const shopListContainer = document.getElementById('shopList');
 
-    // Элементы уведомления
-    const notification = document.getElementById('completionNotification');
-    const closeBtn = document.getElementById('closeNotification');
-
-    // ---------- Функции сохранения/загрузки ----------
-    function saveGameProgress() {
-        const gameData = {
-            balance: balance,
-            clickMultiplier: clickMultiplier,
-            clickAdd: clickAdd,
-            autoIncome: autoIncome,
-            currentLevel: currentLevel,
-            upgrades: upgrades.map(up => ({
-                count: up.count,
-                price: up.price,
-                unlocked: up.unlocked
-            }))
-        };
-
-        // Сохраняем в localStorage как запасной вариант
-        try {
-            localStorage.setItem('iphoneClicker_save', JSON.stringify(gameData));
-            console.log('Progress saved to localStorage');
-        } catch (e) {
-            console.error('Error saving to localStorage:', e);
-        }
-
-        // Сохраняем через Yandex SDK
-        if (window.ysdk) {
-            window.ysdk.savePlayerData(gameData)
-                .then(() => console.log('Progress saved to Yandex'))
-                .catch(error => console.error('Error saving to Yandex:', error));
+    // ----- SDK и gameplay уведомления -----
+    function notifyGameplayStart() {
+        if (!isGameplayActive && ysdk && ysdk.features && ysdk.features.GameplayAPI) {
+            try { ysdk.features.GameplayAPI.start(); isGameplayActive = true; console.log('✅ Gameplay started'); } catch(e) { console.warn(e); }
         }
     }
 
-    function loadGameProgress() {
-        // Сначала пробуем загрузить из Yandex SDK (данные приходят через событие)
-        // Если не получилось, загружаем из localStorage
-        
-        const savedData = localStorage.getItem('iphoneClicker_save');
-        if (savedData) {
-            try {
-                const data = JSON.parse(savedData);
-                applyLoadedData(data);
-                console.log('Progress loaded from localStorage');
-            } catch (e) {
-                console.error('Error parsing saved data:', e);
-                setDefaultProgress();
-            }
+    function notifyGameplayStop() {
+        if (isGameplayActive && ysdk && ysdk.features && ysdk.features.GameplayAPI) {
+            try { ysdk.features.GameplayAPI.stop(); isGameplayActive = false; console.log('✅ Gameplay stopped'); } catch(e) { console.warn(e); }
+        }
+    }
+
+    // ---- Локализация ----
+    function getLanguageFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get('lang');
+        if (langParam && ['ru', 'en', 'tr', 'kk'].includes(langParam)) return langParam;
+        const htmlLang = document.documentElement.lang;
+        if (htmlLang && ['ru', 'en', 'tr', 'kk'].includes(htmlLang)) return htmlLang;
+        return 'ru';
+    }
+
+    function applyLanguage(lang) {
+        const gameTitle = document.getElementById('gameTitle');
+        const balanceLabel = document.getElementById('balanceLabel');
+        const autoLabel = document.getElementById('autoLabel');
+        const footerNote = document.getElementById('footerNote');
+        if (lang === 'en') {
+            if (gameTitle) gameTitle.textContent = 'IPHONE CLICKER';
+            if (balanceLabel) balanceLabel.textContent = 'B';
+            if (autoLabel) autoLabel.innerHTML = '⏱ Auto <span id="autoIncomeDisplay">0</span>';
+            if (footerNote) footerNote.textContent = 'tap iPhone — save for new level';
+        } else if (lang === 'tr') {
+            if (gameTitle) gameTitle.textContent = 'IPHONE TIKLAYICI';
+            if (balanceLabel) balanceLabel.textContent = 'B';
+            if (autoLabel) autoLabel.innerHTML = '⏱ Oto <span id="autoIncomeDisplay">0</span>';
+            if (footerNote) footerNote.textContent = 'iPhone\'a tıkla — yeni seviye için biriktir';
         } else {
-            setDefaultProgress();
+            if (gameTitle) gameTitle.textContent = 'IPHONE CLICKER';
+            if (balanceLabel) balanceLabel.textContent = 'Б';
+            if (autoLabel) autoLabel.innerHTML = '⏱ Б. Сек. <span id="autoIncomeDisplay">0</span>';
+            if (footerNote) footerNote.textContent = 'кликай по айфону — копи на новый уровень';
+        }
+        const updatedAutoSpan = document.getElementById('autoIncomeDisplay');
+        if (updatedAutoSpan) updatedAutoSpan.innerText = autoIncome;
+    }
+
+    // ---- СОХРАНЕНИЕ / ЗАГРУЗКА ----
+    function saveGameProgress() {
+        const gameData = {
+            balance, clickMultiplier, clickAdd, autoIncome, currentLevel,
+            upgrades: upgrades.map(up => ({ count: up.count, price: up.price, unlocked: up.unlocked }))
+        };
+        try {
+            localStorage.setItem('iphoneClicker_save', JSON.stringify(gameData));
+        } catch(e) { console.error('localStorage error:', e); }
+        if (ysdk) {
+            try { ysdk.savePlayerData(gameData).catch(e => console.error('Yandex save error:', e)); } catch(e) {}
         }
     }
 
     function applyLoadedData(data) {
         if (!data) return;
-        
         balance = data.balance || 0;
         clickMultiplier = data.clickMultiplier || 1;
         clickAdd = data.clickAdd || 0;
         autoIncome = data.autoIncome || 0;
         currentLevel = data.currentLevel || 1;
-        
         if (data.upgrades && Array.isArray(data.upgrades)) {
             data.upgrades.forEach((savedUp, index) => {
                 if (upgrades[index]) {
                     upgrades[index].count = savedUp.count || 0;
                     upgrades[index].price = savedUp.price || upgrades[index].basePrice;
-                    upgrades[index].unlocked = savedUp.unlocked || (index < 2); // Первые два всегда разблокированы
+                    upgrades[index].unlocked = savedUp.unlocked || (index < 2);
                 }
             });
         }
-        
         updateUI();
     }
 
@@ -156,118 +149,114 @@
         clickAdd = 0;
         autoIncome = 0;
         currentLevel = 1;
-        
-        // Сброс улучшений
         upgrades.forEach((up, index) => {
             up.count = 0;
             up.price = up.basePrice;
-            up.unlocked = index < 2; // Только первые два разблокированы
+            up.unlocked = index < 2;
         });
-        
         updateUI();
     }
 
-    // ---------- Обновление интерфейса ----------
-    function updateUI() {
-        balanceDisplay.innerText = Math.floor(balance);
-        autoIncomeDisplay.innerText = autoIncome;
-        autoRateDisplay.innerText = autoIncome + '/сек';
+    function loadGameProgress() {
+        const savedData = localStorage.getItem('iphoneClicker_save');
+        if (savedData) {
+            try { applyLoadedData(JSON.parse(savedData)); console.log('📀 Loaded from localStorage'); } 
+            catch(e) { console.error('Parse error', e); setDefaultProgress(); }
+        } else { setDefaultProgress(); }
+    }
 
-        // Определяем текущий уровень по балансу
+    // ---- ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (главное + боковое меню) ----
+    function updateUI() {
+        if (balanceDisplay) balanceDisplay.innerText = Math.floor(balance);
+        if (autoIncomeDisplaySpan) autoIncomeDisplaySpan.innerText = autoIncome;
+        if (autoRateDisplay) autoRateDisplay.innerText = autoIncome + '/сек';
+
+        // Расчет нового уровня
         let newLevel = 1;
         for (let i = thresholds.length - 1; i >= 0; i--) {
-            if (balance >= thresholds[i]) {
-                newLevel = i + 1;
-                break;
-            }
+            if (balance >= thresholds[i]) { newLevel = i + 1; break; }
         }
         newLevel = Math.min(newLevel, models.length);
-        
         if (newLevel !== currentLevel) {
             currentLevel = newLevel;
-            // Разблокировка улучшений в зависимости от уровня
+            // Разблокировка улучшений по уровню (до currentLevel+1)
             for (let i = 0; i < upgrades.length; i++) {
-                if (i < currentLevel + 1) {
-                    upgrades[i].unlocked = true;
-                }
+                if (i < currentLevel + 1) upgrades[i].unlocked = true;
             }
-            // Сохраняем прогресс при повышении уровня
             saveGameProgress();
         }
 
-        // Проверка на достижение конца игры
+        // Проверка на завершение
         if (currentLevel >= models.length && !gameCompletedNotified) {
-            showCompletionNotification();
+            if (notificationDiv) notificationDiv.classList.remove('hidden');
+            notifyGameplayStop();
             gameCompletedNotified = true;
         }
 
+        // Отображение текущей модели
         const modelIndex = Math.min(currentLevel - 1, models.length - 1);
-        currentModelName.innerText = models[modelIndex].name;
-        currentModelImage.src = models[modelIndex].image;
-        currentModelImage.alt = models[modelIndex].name;
-
-        levelDisplay.innerText = `Уровень ${currentLevel}`;
-
-        if (currentLevel < models.length) {
-            nextModelDisplay.innerText = `→ ${models[currentLevel].name}`;
-        } else {
-            nextModelDisplay.innerText = `⭐ MAX`;
+        if (currentModelNameSpan) currentModelNameSpan.innerText = models[modelIndex].name;
+        if (currentModelImg) currentModelImg.src = models[modelIndex].image;
+        if (levelDisplaySpan) levelDisplaySpan.innerText = `Уровень ${currentLevel}`;
+        if (nextModelSpan) {
+            if (currentLevel < models.length) nextModelSpan.innerText = `→ ${models[currentLevel].name}`;
+            else nextModelSpan.innerText = `⭐ MAX`;
         }
 
-        renderShopGrid();
-
-        // Управление отдельной кнопкой x2
-        const firstUpgrade = upgrades[0];
-        buyX2.disabled = (firstUpgrade.count >= firstUpgrade.maxCount);
+        // Отрисовка бокового меню улучшений
+        renderSidebarUpgrades();
     }
 
-    // ---------- Показать уведомление о завершении ----------
-    function showCompletionNotification() {
-        notification.classList.remove('hidden');
-    }
-
-    // ---------- Скрыть уведомление ----------
-    function hideNotification() {
-        notification.classList.add('hidden');
-    }
-
-    // ---------- Отрисовка сетки улучшений ----------
-    function renderShopGrid() {
+    // ---- ОТРИСОВКА БОКОВОГО МЕНЮ (вертикальные карточки) ----
+    function renderSidebarUpgrades() {
+        if (!shopListContainer) return;
         let html = '';
         for (let i = 0; i < upgrades.length; i++) {
             const up = upgrades[i];
             if (!up.unlocked) {
                 html += `
-                    <div class="shop-item locked" data-index="${i}">
-                        <div class="item-name">???</div>
+                    <div class="upgrade-card locked" data-index="${i}">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">???</div>
+                            <div class="upgrade-badge">🔒 заблокировано</div>
+                        </div>
                     </div>
                 `;
             } else if (up.count >= up.maxCount) {
                 html += `
-                    <div class="shop-item maxed" data-index="${i}">
-                        <div class="item-name">MAX</div>
+                    <div class="upgrade-card maxed" data-index="${i}">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">${up.emoji} ${up.name}</div>
+                            <div class="upgrade-badge">✅ MAX</div>
+                        </div>
+                        <div class="max-label">MAX</div>
                     </div>
                 `;
             } else {
                 html += `
-                    <div class="shop-item" data-index="${i}">
-                        <div class="item-name">${up.name}</div>
-                        <div class="item-price">${up.price} Б</div>
+                    <div class="upgrade-card" data-index="${i}">
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">${up.emoji} ${up.name}</div>
+                            <div class="upgrade-badge">уровень ${up.count}/${up.maxCount}</div>
+                        </div>
+                        <div class="upgrade-price">${Math.floor(up.price)}</div>
                     </div>
                 `;
             }
         }
-        shopGrid.innerHTML = html;
+        shopListContainer.innerHTML = html;
 
-        document.querySelectorAll('.shop-item:not(.locked):not(.maxed)').forEach(item => {
-            item.addEventListener('click', (e) => {
-                const index = item.dataset.index;
-                if (index !== undefined) buyUpgrade(parseInt(index));
+        // Навешиваем обработчики на доступные карточки (не locked и не maxed)
+        document.querySelectorAll('.upgrade-card:not(.locked):not(.maxed)').forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = card.dataset.index;
+                if (idx !== undefined) buyUpgrade(parseInt(idx));
             });
         });
     }
 
-    // ---------- Покупка улучшения ----------
+    // ---- ПОКУПКА УЛУЧШЕНИЯ ----
     function buyUpgrade(index) {
         const up = upgrades[index];
         if (!up || !up.unlocked) return;
@@ -289,135 +278,111 @@
                 break;
         }
 
+        // Увеличение цены
         up.price = Math.floor(up.price * 2.2);
-        
-        // Сохраняем прогресс после покупки
         saveGameProgress();
         updateUI();
     }
 
-    // ---------- Клик по айфону ----------
+    // ---- ОБРАБОТЧИК КЛИКА ПО АЙФОНУ (с анимацией сжатия) ----
     function handleClick(e) {
-        // Предотвращаем выделение и контекстное меню
         e.preventDefault();
-        
         const gain = (1 + clickAdd) * clickMultiplier;
         balance += gain;
         
-        // Сохраняем прогресс после клика (с небольшой задержкой, чтобы не вызывать сохранение слишком часто)
         if (window.clickTimeout) clearTimeout(window.clickTimeout);
-        window.clickTimeout = setTimeout(() => {
-            saveGameProgress();
-        }, 500);
+        window.clickTimeout = setTimeout(() => { saveGameProgress(); }, 500);
         
         updateUI();
 
-        currentModelImage.style.transform = 'scale(0.9)';
-        setTimeout(() => {
-            currentModelImage.style.transform = 'scale(1)';
-        }, 80);
-
-        if (window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(8);
+        // Анимация сжатия телефона (без пропадания)
+        if (currentModelImg) {
+            currentModelImg.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                if (currentModelImg) currentModelImg.style.transform = 'scale(1)';
+            }, 80);
         }
     }
 
-    // ---------- Авто-доход ----------
+    // ---- АВТОДОХОД ----
     setInterval(() => {
         if (autoIncome > 0) {
             balance += autoIncome;
-            saveGameProgress(); // Сохраняем при авто-доходе
+            saveGameProgress();
             updateUI();
         }
     }, 1000);
 
-    // ---------- Обработчики для мобильных устройств ----------
+    // ---- ВИДИМОСТЬ ----
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            notifyGameplayStop();
+            saveGameProgress();
+        } else {
+            notifyGameplayStart();
+        }
+    });
+
+    // ---- ЗАПРЕТ КОНТЕКСТНОГО МЕНЮ И ВЫДЕЛЕНИЯ ----
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
         return false;
     }
-
-    // Отключаем контекстное меню на всех элементах
     document.addEventListener('contextmenu', preventDefaults);
-    
-    // Отключаем выделение текста
     document.addEventListener('selectstart', preventDefaults);
-    
-    // Отключаем стандартные жесты на тач-устройствах
-    document.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.iphone-click-area, .shop-item')) {
+
+    // ---- СОБЫТИЯ ----
+    if (clickerArea) {
+        clickerArea.addEventListener('click', handleClick);
+        clickerArea.addEventListener('touchstart', (e) => {
             e.preventDefault();
-        }
-    }, { passive: false });
-    
-    document.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-    }, { passive: false });
-    
-    document.addEventListener('touchend', (e) => {
-        e.preventDefault();
-    }, { passive: false });
+            handleClick(e);
+        }, { passive: false });
+    }
 
-    // ---------- Обработчики событий ----------
-    clickerMain.addEventListener('click', handleClick);
-    clickerMain.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        handleClick(e);
-    }, { passive: false });
-    
-    buyX2.addEventListener('click', (e) => {
-        e.preventDefault();
-        buyUpgrade(0);
-    });
-    
-    closeBtn.addEventListener('click', hideNotification);
-    
-    // Клик по фону уведомления тоже закрывает
-    notification.addEventListener('click', (e) => {
-        if (e.target === notification) hideNotification();
-    });
+    if (closeNotifBtn) {
+        closeNotifBtn.addEventListener('click', () => {
+            if (notificationDiv) notificationDiv.classList.add('hidden');
+            notifyGameplayStart();
+        });
+    }
+    if (notificationDiv) {
+        notificationDiv.addEventListener('click', (e) => {
+            if (e.target === notificationDiv) {
+                notificationDiv.classList.add('hidden');
+                notifyGameplayStart();
+            }
+        });
+    }
 
-    // Обработка загрузки данных из Yandex SDK
-    window.addEventListener('yandexLoadData', (event) => {
-        if (event.detail && event.detail.data) {
-            applyLoadedData(event.detail.data);
-        }
-    });
-
-    // Обработка смены языка
-    window.addEventListener('yandexLanguage', (event) => {
-        const lang = event.detail.language;
-        console.log('Game language set to:', lang);
-        // Здесь можно добавить логику перевода интерфейса
-        if (lang === 'en') {
-            // Переключить на английский
-            document.querySelector('.store-header h1').textContent = 'IPHONE CLICKER';
-            document.querySelector('.balance-label').textContent = 'B';
-            document.querySelector('.auto-label').innerHTML = '⏱ Auto <span id="autoIncomeDisplay">0</span>';
-            document.querySelector('.footer-note').textContent = 'click iPhone — save for new level';
-        }
-    });
-
-    // Обработка видимости страницы (сохраняем при уходе)
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            saveGameProgress();
-        }
-    });
-
-    // Сохраняем перед закрытием
     window.addEventListener('beforeunload', () => {
+        notifyGameplayStop();
         saveGameProgress();
     });
 
-    // ---------- Инициализация игры ----------
-    loadGameProgress();
-    
-    // Отправляем событие gameReady через SDK после загрузки игры
-    setTimeout(() => {
-        if (window.ysdk && window.ysdk.features && window.ysdk.features.GameplayAPI) {
-            window.ysdk.features.GameplayAPI.gameReady();
-        }
-    }, 1000);
+    // ---- ИНИЦИАЛИЗАЦИЯ ----
+    async function initGame() {
+        console.log('🟢 initGame()');
+        const language = getLanguageFromUrl();
+        applyLanguage(language);
+        loadGameProgress();
+        
+        // Яндекс SDK
+        try {
+            if (typeof YaGames !== 'undefined') {
+                window.ysdk = await YaGames.init();
+                console.log('✅ Yandex SDK initialized');
+                if (ysdk.features && ysdk.features.LoadingAPI) ysdk.features.LoadingAPI.ready();
+                if (ysdk.features && ysdk.features.GameplayAPI) {
+                    ysdk.features.GameplayAPI.start();
+                    isGameplayActive = true;
+                }
+            } else {
+                console.log('⚠️ YaGames not available');
+            }
+        } catch(e) { console.warn('SDK error:', e); }
+    }
+
+    initGame();
 })();

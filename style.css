@@ -1,337 +1,354 @@
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 html, body {
-    overflow: hidden;
-    position: fixed;
     width: 100%;
     height: 100%;
-    margin: 0;
-    padding: 0;
-    touch-action: none;
-    -ms-touch-action: none;
+    overflow: hidden;
+    position: fixed;
+    touch-action: pan-x pan-y;
 }
 
 body {
-    background: #1b1e24;
-    background-image: radial-gradient(circle at 30% 30%, #2a2f38 0%, #14171c 100%);
+    background: radial-gradient(circle at 20% 30%, #1a1e26, #0c0f14);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px; /* Уменьшил отступы */
+    padding: 12px;
 }
 
-.store-container {
-    max-width: 440px;
+/* ГЛАВНЫЙ КОНТЕЙНЕР — ДВЕ КОЛОНКИ */
+.game-layout {
+    max-width: 1100px;
     width: 100%;
-    height: 95vh; /* Ограничиваем высоту */
-    background: rgba(40, 44, 52, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    height: 95vh;
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 16px;
+    background: transparent;
+}
+
+/* ОСНОВНАЯ ОБЛАСТЬ (ЛЕВАЯ) */
+.main-area {
+    background: rgba(28, 32, 40, 0.75);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border-radius: 48px;
-    padding: 16px 16px 20px; /* Уменьшил внутренние отступы */
-    box-shadow: 
-        0 20px 40px rgba(0,0,0,0.5),
-        0 0 0 1px rgba(255,255,255,0.05) inset,
-        0 0 0 2px rgba(0,0,0,0.3) inset;
-    border: 1px solid rgba(255,255,255,0.03);
+    padding: 20px 18px 22px;
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
-.store-header h1 {
-    font-size: 2rem; /* Уменьшил размер шрифта */
+/* БОКОВОЕ МЕНЮ (ПРАВАЯ ПАНЕЛЬ) */
+.upgrades-sidebar {
+    background: rgba(20, 24, 30, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 40px;
+    padding: 18px 12px;
+    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    font-size: 1.3rem;
     font-weight: 700;
-    letter-spacing: 1px;
-    color: #ff9f0a;
     text-align: center;
-    margin-bottom: 12px; /* Уменьшил отступ */
-    text-shadow: 0 2px 8px rgba(255,159,10,0.3);
-    background: linear-gradient(135deg, #ff9f0a, #ffb340);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid rgba(255, 159, 10, 0.4);
+    color: #ff9f0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: -0.3px;
 }
 
-.row-x2-balance {
+.sidebar-header span {
+    font-size: 1.5rem;
+}
+
+/* СПИСОК УЛУЧШЕНИЙ (вертикальный скролл) */
+.shop-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 4px;
+}
+
+.shop-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.shop-list::-webkit-scrollbar-track {
+    background: #2a2e36;
+    border-radius: 10px;
+}
+
+.shop-list::-webkit-scrollbar-thumb {
+    background: #ff9f0a;
+    border-radius: 10px;
+}
+
+/* КАРТОЧКА УЛУЧШЕНИЯ (вертикальная) */
+.upgrade-card {
+    background: #1e222a;
+    border-radius: 24px;
+    padding: 12px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #2c2f36;
-    border-radius: 60px;
-    padding: 6px 12px; /* Уменьшил отступы */
-    margin-bottom: 12px; /* Уменьшил отступ */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.03);
-}
-
-.x2-button {
-    background: #ff9f0a;
-    border: none;
-    border-radius: 40px;
-    padding: 8px 20px; /* Уменьшил отступы */
-    font-size: 1.2rem; /* Уменьшил шрифт */
-    font-weight: 600;
-    color: #ffffff;
-    box-shadow: 0 4px 0 #b26000;
-    transition: all 0.08s linear;
+    transition: all 0.2s ease;
     cursor: pointer;
-    border: 1px solid #ffb443;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    -webkit-touch-callout: none;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
 }
 
-.x2-button:active {
-    transform: translateY(4px);
-    box-shadow: 0 0px 0 #b26000;
+.upgrade-card:active {
+    transform: scale(0.97);
+    background: #2a2f38;
 }
 
-.x2-button:disabled {
-    opacity: 0.4;
-    transform: none;
-    box-shadow: 0 4px 0 #7a4d00;
+.upgrade-card.locked {
+    opacity: 0.5;
+    filter: grayscale(0.4);
+    cursor: default;
     pointer-events: none;
-    filter: grayscale(50%);
+    background: #161a22;
+}
+
+.upgrade-card.maxed {
+    background: #2f2a20;
+    border: 1px solid #ffb347;
+    box-shadow: 0 0 8px rgba(255, 159, 10, 0.3);
+    cursor: default;
+    pointer-events: none;
+}
+
+.upgrade-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.upgrade-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #eef2ff;
+    letter-spacing: -0.2px;
+}
+
+.upgrade-badge {
+    font-size: 0.65rem;
+    background: rgba(255, 159, 10, 0.2);
+    display: inline-block;
+    width: fit-content;
+    padding: 2px 8px;
+    border-radius: 50px;
+    color: #ffb86b;
+}
+
+.upgrade-price {
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #ff9f0a;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 5px 12px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.upgrade-price::before {
+    content: "Б";
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #ffb347;
+}
+
+.max-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffd966;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 5px 12px;
+    border-radius: 30px;
+}
+
+/* ЗАГОЛОВОК И БАЛАНС */
+.store-header h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    text-align: center;
+    background: linear-gradient(135deg, #ffb347, #ff8c00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+}
+
+/* Строка баланса (без кнопки x2) */
+.row-balance {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 80px;
+    padding: 6px 20px 6px 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .balance-box {
+    background: #00000044;
+    backdrop-filter: blur(8px);
+    padding: 5px 18px;
+    border-radius: 60px;
     display: flex;
     align-items: baseline;
-    gap: 4px;
-    background: #3a3f48;
-    padding: 4px 16px; /* Уменьшил отступы */
-    border-radius: 60px;
-    border: 1px solid rgba(255,255,255,0.03);
+    gap: 6px;
 }
 
 .balance-label {
-    font-size: 1rem; /* Уменьшил шрифт */
-    font-weight: 500;
+    font-size: 1.2rem;
+    font-weight: 600;
     color: #ff9f0a;
 }
 
 .balance-value {
-    font-size: 1.6rem; /* Уменьшил шрифт */
-    font-weight: 700;
-    color: #ffffff;
-    font-feature-settings: "tnum";
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
 }
 
 .auto-row {
-    background: #2c2f36;
-    border-radius: 40px;
-    padding: 8px 16px; /* Уменьшил отступы */
-    margin-bottom: 16px; /* Уменьшил отступ */
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 60px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.03);
+    align-items: baseline;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .auto-label {
-    font-size: 1rem; /* Уменьшил шрифт */
+    font-size: 0.95rem;
     font-weight: 500;
-    color: #a8aeb7;
+    color: #b9c3d4;
 }
 
 .auto-label span {
     color: #ff9f0a;
-    font-weight: 600;
+    font-weight: 800;
+    font-size: 1.2rem;
 }
 
 .auto-value {
-    font-size: 1.4rem; /* Уменьшил шрифт */
+    font-size: 1.5rem;
     font-weight: 700;
     color: #5a9eff;
 }
 
+/* АЙФОН — анимация сжатия и возврата */
 .iphone-click-area {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 16px; /* Уменьшил отступ */
+    margin: 8px 0 18px;
     cursor: pointer;
-    transition: transform 0.1s ease;
-    -webkit-touch-callout: none;
-}
-
-.iphone-click-area:active {
-    transform: scale(0.97);
 }
 
 .iphone-model-name {
-    font-size: 1.2rem; /* Уменьшил шрифт */
-    font-weight: 600;
-    color: #ff9f0a;
-    background: rgba(255,159,10,0.15);
-    padding: 4px 18px; /* Уменьшил отступы */
+    background: rgba(255, 159, 10, 0.2);
+    backdrop-filter: blur(8px);
+    padding: 6px 22px;
     border-radius: 60px;
-    border: 1px solid rgba(255,159,10,0.2);
-    margin-bottom: 8px; /* Уменьшил отступ */
-    backdrop-filter: blur(4px);
-    color: #ffb347;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffc285;
+    margin-bottom: 12px;
+    border: 1px solid #ff9f0a30;
 }
 
 .iphone-image {
-    width: 180px; /* Уменьшил размер картинки */
-    height: auto;
-    border-radius: 40px;
-    filter: drop-shadow(0 15px 20px rgba(0,0,0,0.5));
-    transition: transform 0.1s ease, filter 0.2s;
-    background: #2a2e35;
-    padding: 8px; /* Уменьшил отступы */
-    border: 2px solid rgba(255,255,255,0.05);
-    -webkit-user-drag: none;
-    user-drag: none;
+    width: 180px;
+    border-radius: 38px;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+    background: #1a1e26;
+    padding: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
     pointer-events: none;
+    transition: transform 0.08s ease;
+    /* быстрая плавная анимация */
 }
 
-.iphone-click-area .iphone-image {
-    pointer-events: none;
-}
-
-/* ===== ИСПРАВЛЕНИЕ: Ограничиваем количество улучшений ===== */
-.shop-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px; /* Уменьшил расстояние между элементами */
-    margin: 12px 0 12px; /* Уменьшил отступы */
-    flex-shrink: 0; /* Запрещаем сжиматься */
-}
-
-/* Показываем только первые 8 улучшений (2 ряда по 4) */
-.shop-item:nth-child(n+9) {
-    display: none; /* Скрываем элементы с 9-го и дальше */
-}
-
-.shop-item {
-    background: #2c2f36;
-    border: 1px solid rgba(255,255,255,0.03);
-    border-radius: 20px; /* Уменьшил скругление */
-    padding: 12px 4px; /* Уменьшил отступы */
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 80px; /* Уменьшил минимальную высоту */
-    transition: all 0.2s ease;
-    color: #f0f0f5;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    cursor: pointer;
-    -webkit-touch-callout: none;
-}
-
-.shop-item:active {
-    background: #3a3f48;
-    transform: scale(0.98);
-}
-
-.shop-item.locked {
-    background: #22252b;
-    color: #6f767f;
-    border-color: rgba(255,255,255,0.02);
-    cursor: default;
-    pointer-events: none;
-}
-
-.shop-item.locked .item-name {
-    font-size: 1.3rem; /* Уменьшил шрифт */
-    color: #4f555e;
-}
-
-.shop-item.maxed {
-    background: #2a2b20;
-    border: 2px solid #ffd966;
-    box-shadow: 0 0 15px rgba(255,215,0,0.2);
-    cursor: default;
-    pointer-events: none;
-}
-
-.shop-item.maxed .item-name {
-    color: #ffd966;
-    font-weight: 700;
-    font-size: 1.2rem; /* Уменьшил шрифт */
-    text-shadow: 0 0 8px #ffd700;
-}
-
-.item-name {
-    font-size: 0.85rem; /* Уменьшил шрифт */
-    font-weight: 600;
-    margin-bottom: 4px; /* Уменьшил отступ */
-}
-
-.item-price {
-    font-size: 0.9rem; /* Уменьшил шрифт */
-    font-weight: 700;
-    color: #ff9f0a;
-    background: rgba(255,159,10,0.15);
-    padding: 3px 8px; /* Уменьшил отступы */
-    border-radius: 30px;
-}
-
+/* УРОВНИ + ПРОГРЕСС */
 .level-panel {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 60px;
+    padding: 12px 20px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    background: #2c2f36;
-    border-radius: 40px;
-    padding: 8px 16px; /* Уменьшил отступы */
-    border: 1px solid rgba(255,255,255,0.03);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    margin-top: 4px; /* Уменьшил отступ */
-    flex-shrink: 0; /* Запрещаем сжиматься */
+    margin-top: 8px;
+    margin-bottom: 12px;
+    align-items: center;
 }
 
 .level-text {
-    font-size: 1rem; /* Уменьшил шрифт */
-    font-weight: 600;
-    color: #ff9f0a;
+    font-weight: 700;
+    color: #ffb347;
+    font-size: 0.95rem;
 }
 
 .next-model {
-    font-size: 0.9rem; /* Уменьшил шрифт */
-    color: #a8aeb7;
-    background: #3a3f48;
-    padding: 4px 12px; /* Уменьшил отступы */
+    background: #232731;
+    padding: 5px 16px;
     border-radius: 40px;
-    border: 1px solid rgba(255,255,255,0.03);
+    font-size: 0.8rem;
+    color: #bac8dc;
 }
 
 .footer-note {
     text-align: center;
-    font-size: 0.7rem; /* Уменьшил шрифт */
-    color: #7c8390;
-    margin-top: 8px; /* Уменьшил отступ */
-    flex-shrink: 0; /* Запрещаем сжиматься */
+    font-size: 0.7rem;
+    color: #7e8b9f;
+    margin-top: 8px;
 }
 
-/* ===== Уведомление о завершении ===== */
+/* УВЕДОМЛЕНИЕ О КОМПЛИТЕ */
 .notification {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
-    transition: opacity 0.3s ease;
-    opacity: 1;
+    z-index: 2000;
+    transition: opacity 0.25s;
 }
 
 .notification.hidden {
@@ -340,93 +357,71 @@ body {
 }
 
 .notification-content {
-    background: #2c2f36;
-    border-radius: 40px;
-    padding: 25px 20px; /* Уменьшил отступы */
-    max-width: 320px; /* Уменьшил максимальную ширину */
-    width: 90%;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px #3a3f48 inset;
-    border: 1px solid rgba(255,255,255,0.05);
-    color: #f0f0f5;
-    position: relative;
+    background: #20242e;
+    border-radius: 48px;
+    padding: 30px 24px;
+    max-width: 320px;
     text-align: center;
+    border: 1px solid #ff9f0a40;
+    box-shadow: 0 25px 40px black;
+    position: relative;
 }
 
 .close-btn {
     position: absolute;
     top: 12px;
     right: 16px;
-    font-size: 24px; /* Уменьшил шрифт */
-    font-weight: 300;
-    color: #a8aeb7;
+    font-size: 24px;
+    color: #aaa;
     cursor: pointer;
-    transition: color 0.2s;
-    line-height: 1;
-}
-
-.close-btn:hover {
-    color: #ff9f0a;
 }
 
 .notification-content h2 {
     color: #ff9f0a;
-    margin-bottom: 12px; /* Уменьшил отступ */
-    font-size: 1.6rem; /* Уменьшил шрифт */
+    margin: 8px 0 12px;
 }
 
-.notification-content p {
-    margin-bottom: 10px; /* Уменьшил отступ */
-    line-height: 1.4;
-    color: #d0d5dd;
-    font-size: 0.9rem; /* Уменьшил шрифт */
-}
-
-.notification-content strong {
-    color: #ff9f0a;
-}
-
-.contacts {
-    display: flex;
-    justify-content: center;
-    gap: 15px; /* Уменьшил расстояние */
-    margin: 15px 0 8px; /* Уменьшил отступы */
-}
-
-.contacts a {
-    background: #3a3f48;
-    color: #ff9f0a;
-    text-decoration: none;
-    padding: 8px 20px; /* Уменьшил отступы */
+.thanks-text {
+    background: #ff9f0a20;
+    display: inline-block;
+    padding: 8px 18px;
     border-radius: 40px;
-    font-weight: 600;
-    transition: all 0.2s;
-    border: 1px solid rgba(255,159,10,0.3);
-    font-size: 0.9rem; /* Уменьшил шрифт */
+    margin-top: 12px;
+    font-weight: 500;
 }
 
-.contacts a:hover {
-    background: #ff9f0a;
-    color: #1b1e24;
-    border-color: #ff9f0a;
+/* АДАПТАЦИЯ ПОД МАЛЕНЬКИЕ ЭКРАНЫ */
+@media (max-width: 680px) {
+    .game-layout {
+        grid-template-columns: 1fr 180px;
+        gap: 10px;
+    }
+    .upgrade-card {
+        padding: 8px 8px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .upgrade-price, .max-label {
+        width: 100%;
+        justify-content: center;
+    }
+    .iphone-image {
+        width: 140px;
+    }
+    .balance-value {
+        font-size: 1.4rem;
+    }
 }
 
-.small {
-    font-size: 0.7rem; /* Уменьшил шрифт */
-    color: #7c8390;
-    margin-top: 8px;
-}
-
-/* Дополнительные защиты от мобильных жестов */
-img, div, button {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-button {
-    touch-action: manipulation;
+@media (max-width: 540px) {
+    .game-layout {
+        grid-template-columns: 1fr 140px;
+    }
+    .upgrade-name {
+        font-size: 0.7rem;
+    }
+    .sidebar-header {
+        font-size: 1rem;
+    }
 }
