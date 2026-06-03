@@ -205,14 +205,14 @@ body {
     letter-spacing: -0.5px;
 }
 
-/* Строка баланса (без кнопки x2) */
+/* Строка баланса — теперь по центру */
 .row-balance {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     background: rgba(0, 0, 0, 0.35);
     border-radius: 80px;
-    padding: 6px 20px 6px 20px;
+    padding: 6px 20px;
     margin-bottom: 16px;
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -299,7 +299,6 @@ body {
     border: 2px solid rgba(255, 255, 255, 0.1);
     pointer-events: none;
     transition: transform 0.08s ease;
-    /* быстрая плавная анимация */
 }
 
 /* УРОВНИ + ПРОГРЕСС */
