@@ -4,7 +4,7 @@
     // ----- МИРЫ с явными путями к фотографиям -----
     const worlds = [
         { 
-            id: 0, name: 'Мир Xiaomi', prefix: '🤖', bonus: 1, requiredForNext: 30000, completed: false,
+            id: 0, name: 'Мир Xiaomi', prefix: '🤖', bonus: 1, requiredForNext: 65000, completed: false,
             phones: [
                 { name: 'Mi 5', image: 'images/xiaomi/mi5.jpg' },
                 { name: 'Mi 6', image: 'images/xiaomi/mi6.jpg' },
@@ -194,14 +194,21 @@
         { name: '👑 Множитель', price: 1000, type: 'globalMultiplier', effect: 'x1.5 ко всем доходам', count: 0, maxCount: 5, emoji: '👑', unlocked: false }
     ];
 
-    // ЗАДАНИЯ
+    // ЗАДАНИЯ - теперь 12 штук
     let quests = [
         { id: 0, name: '👆 Кликер', desc: 'Сделать 100 кликов', target: 100, progress: 0, reward: 25, completed: false, type: 'click' },
         { id: 1, name: '📈 Заработок', desc: 'Накопить 5000 баллов', target: 5000, progress: 0, reward: 100, completed: false, type: 'balance' },
         { id: 2, name: '⭐ Прогресс', desc: 'Открыть 5 телефонов', target: 5, progress: 0, reward: 250, completed: false, type: 'phone' },
         { id: 3, name: '🏆 Мастер мира', desc: 'Накопить 30000 баллов', target: 30000, progress: 0, reward: 50, completed: false, type: 'balance' },
         { id: 4, name: '⚡ Спринтер', desc: 'Сделать 500 кликов', target: 500, progress: 0, reward: 50, completed: false, type: 'click' },
-        { id: 5, name: '🌍 Перерождение', desc: 'Перейти в новый мир', target: 1, progress: 0, reward: 250, completed: false, type: 'prestige' }
+        { id: 5, name: '🌍 Перерождение', desc: 'Перейти в новый мир', target: 1, progress: 0, reward: 250, completed: false, type: 'prestige' },
+        // НОВЫЕ 6 ЗАДАНИЙ
+        { id: 6, name: '💎 Коллекционер', desc: 'Купить 5 любых бустов', target: 5, progress: 0, reward: 150, completed: false, type: 'goldUpgrade' },
+        { id: 7, name: '🔨 Трудоголик', desc: 'Сделать 2000 кликов', target: 2000, progress: 0, reward: 200, completed: false, type: 'click' },
+        { id: 8, name: '💰 Миллионер', desc: 'Накопить 100000 баллов', target: 100000, progress: 0, reward: 500, completed: false, type: 'balance' },
+        { id: 9, name: '🌟 Мастер миров', desc: 'Пройти 3 мира', target: 3, progress: 0, reward: 1000, completed: false, type: 'worldPass' },
+        { id: 10, name: '🏅 Легенда', desc: 'Открыть 20 телефонов', target: 20, progress: 0, reward: 750, completed: false, type: 'phone' },
+        { id: 11, name: '⚙️ Мега-фермер', desc: 'Накопить 1000 золота', target: 1000, progress: 0, reward: 300, completed: false, type: 'gold' }
     ];
 
     // Переменные игры
@@ -216,13 +223,14 @@
     let currentWorld = 0;
     let currentPhoneIndex = 0;
     let totalClicks = 0;
+    let totalWorldsPassed = 0; // счетчик пройденных миров для задания
+    let totalUpgradesBought = 0; // счетчик купленных бустов
     let gameCompleted = false;
     let questTimer = null;
     let timeUntilReset = 300;
     let ysdk = null;
 
     // DOM элементы
-    const balanceDisplay = document.getElementById('balanceDisplay');
     const goldDisplay = document.getElementById('goldDisplay');
     const modelNameSpan = document.getElementById('currentModelName');
     const modelImg = document.getElementById('currentModelImage');
@@ -237,18 +245,60 @@
     const worldsList = document.getElementById('worldsList');
     const worldBonusSpan = document.getElementById('worldBonus');
     const prestigeBtn = document.getElementById('prestigeBtn');
+    
+    // Элементы для шкалы прогресса
+    const progressBarFill = document.getElementById('progressBarFill');
+    const currentPhoneNameSpan = document.getElementById('currentPhoneName');
+    const nextPhoneNameSpan = document.getElementById('nextPhoneName');
+    const currentProgressAmountSpan = document.getElementById('currentProgressAmount');
+    const nextProgressNeededSpan = document.getElementById('nextProgressNeeded');
 
     function getWorld() { return worlds[currentWorld]; }
     function getPhone() { return getWorld().phones[currentPhoneIndex]; }
     function getPhoneName() { return getPhone().name; }
     function getPhoneImage() { return getPhone().image; }
     function getNextPhone() { return currentPhoneIndex + 1 < getWorld().phones.length ? getWorld().phones[currentPhoneIndex + 1] : null; }
+    
+    function getPhoneThreshold(index) {
+        return 500 * Math.pow(1.5, index);
+    }
+
+    function updateProgressBar() {
+        const world = getWorld();
+        const currentIndex = currentPhoneIndex;
+        const currentThreshold = getPhoneThreshold(currentIndex);
+        const nextThreshold = currentIndex + 1 < world.phones.length ? getPhoneThreshold(currentIndex + 1) : null;
+        
+        const currentPhone = world.phones[currentIndex];
+        const nextPhone = currentIndex + 1 < world.phones.length ? world.phones[currentIndex + 1] : null;
+        
+        if (currentPhoneNameSpan) {
+            currentPhoneNameSpan.textContent = `${world.prefix} ${currentPhone.name}`;
+        }
+        
+        if (nextPhoneNameSpan) {
+            nextPhoneNameSpan.textContent = nextPhone ? `${world.prefix} ${nextPhone.name}` : 'MAX';
+        }
+        
+        if (nextThreshold !== null) {
+            const progress = balance - currentThreshold;
+            const needed = nextThreshold - currentThreshold;
+            const percent = Math.min(100, Math.max(0, (progress / needed) * 100));
+            
+            if (progressBarFill) progressBarFill.style.width = `${percent}%`;
+            if (currentProgressAmountSpan) currentProgressAmountSpan.textContent = Math.floor(Math.max(0, progress));
+            if (nextProgressNeededSpan) nextProgressNeededSpan.textContent = Math.floor(needed);
+        } else {
+            if (progressBarFill) progressBarFill.style.width = '100%';
+            if (currentProgressAmountSpan) currentProgressAmountSpan.textContent = balance - currentThreshold;
+            if (nextProgressNeededSpan) nextProgressNeededSpan.textContent = 'MAX';
+        }
+    }
 
     function recalcPhone() {
         let newIndex = 0;
-        let threshold = 0;
         for (let i = 0; i < getWorld().phones.length; i++) {
-            threshold = 500 * Math.pow(1.5, i);
+            let threshold = getPhoneThreshold(i);
             if (balance >= threshold) newIndex = i;
             else break;
         }
@@ -270,6 +320,8 @@
         
         worlds[currentWorld].completed = true;
         currentWorld++;
+        totalWorldsPassed++; // для задания "Мастер миров"
+        updateQuestProgress('worldPass', 1);
         
         balance = 0;
         currentPhoneIndex = 0;
@@ -282,19 +334,34 @@
     }
 
     function switchToWorld(worldId) {
+        // Нельзя вернуться в пройденный мир
+        if (worlds[worldId].completed) {
+            alert(`❌ Нельзя вернуться в пройденный мир "${worlds[worldId].name}"!`);
+            return;
+        }
         if (worldId === currentWorld) return;
+        // Проверка: можно переключиться только на следующий мир
         if (worldId > currentWorld && !worlds[worldId-1]?.completed) {
             alert(`❌ Сначала завершите мир "${worlds[worldId-1]?.name}"!`);
             return;
         }
-        if (worldId < currentWorld || worlds[worldId]?.completed) {
-            currentWorld = worldId;
-            balance = 0;
-            currentPhoneIndex = 0;
-            saveGame();
-            updateUI();
-            renderWorldsList();
+        if (worldId < currentWorld) {
+            if (!worlds[worldId].completed) {
+                alert(`❌ Нельзя переключиться на незавершенный мир!`);
+                return;
+            }
         }
+        if (worldId > currentWorld + 1) {
+            alert(`❌ Нельзя переключиться на мир, который ещё не разблокирован!`);
+            return;
+        }
+        
+        currentWorld = worldId;
+        balance = 0;
+        currentPhoneIndex = 0;
+        saveGame();
+        updateUI();
+        renderWorldsList();
     }
 
     function buyGoldUpgrade(index) {
@@ -305,7 +372,9 @@
         
         gold -= up.price;
         up.count++;
+        totalUpgradesBought++;
         updateQuestProgress('goldUpgrade', 1);
+        updateQuestProgress('gold', gold); // для задания на золото
         
         switch(up.type) {
             case 'clickBoost': clickBoost *= 2; break;
@@ -325,7 +394,14 @@
         let changed = false;
         for (let q of quests) {
             if (!q.completed && q.type === type) {
-                q.progress = Math.min(q.target, q.progress + amount);
+                if (type === 'gold') {
+                    // для задания на накопление золота
+                    q.progress = Math.min(q.target, gold);
+                } else if (type === 'worldPass') {
+                    q.progress = Math.min(q.target, totalWorldsPassed);
+                } else {
+                    q.progress = Math.min(q.target, q.progress + amount);
+                }
                 if (q.progress >= q.target && !q.completed) {
                     q.completed = true;
                     gold += q.reward;
@@ -357,10 +433,18 @@
     }
 
     function updatePhoneQuest() {
+        let totalPhonesUnlocked = 0;
+        for (let i = 0; i <= currentWorld; i++) {
+            if (i === currentWorld) {
+                totalPhonesUnlocked += currentPhoneIndex + 1;
+            } else if (worlds[i].completed) {
+                totalPhonesUnlocked += worlds[i].phones.length;
+            }
+        }
+        
         for (let q of quests) {
             if (!q.completed && q.type === 'phone') {
-                let phoneLevel = currentPhoneIndex + 1;
-                if (phoneLevel >= q.target && !q.completed) {
+                if (totalPhonesUnlocked >= q.target && !q.completed) {
                     q.completed = true;
                     gold += q.reward;
                     console.log(`✅ Задание выполнено: ${q.name} +${q.reward} золота`);
@@ -372,13 +456,28 @@
     }
 
     function resetQuests() {
+        let totalPhonesUnlocked = 0;
+        for (let i = 0; i <= currentWorld; i++) {
+            if (i === currentWorld) {
+                totalPhonesUnlocked += currentPhoneIndex + 1;
+            } else if (worlds[i].completed) {
+                totalPhonesUnlocked += worlds[i].phones.length;
+            }
+        }
+        
         quests = [
             { id: 0, name: '👆 Кликер', desc: 'Сделать 100 кликов', target: 100, progress: Math.min(100, totalClicks), reward: 25, completed: totalClicks >= 100, type: 'click' },
             { id: 1, name: '📈 Заработок', desc: 'Накопить 5000 баллов', target: 5000, progress: Math.min(5000, balance), reward: 100, completed: balance >= 5000, type: 'balance' },
-            { id: 2, name: '⭐ Прогресс', desc: 'Открыть 5 телефонов', target: 5, progress: Math.min(5, currentPhoneIndex + 1), reward: 250, completed: (currentPhoneIndex + 1) >= 5, type: 'phone' },
+            { id: 2, name: '⭐ Прогресс', desc: 'Открыть 5 телефонов', target: 5, progress: Math.min(5, totalPhonesUnlocked), reward: 250, completed: totalPhonesUnlocked >= 5, type: 'phone' },
             { id: 3, name: '🏆 Мастер мира', desc: 'Накопить 30000 баллов', target: 30000, progress: Math.min(30000, balance), reward: 50, completed: balance >= 30000, type: 'balance' },
             { id: 4, name: '⚡ Спринтер', desc: 'Сделать 500 кликов', target: 500, progress: Math.min(500, totalClicks), reward: 50, completed: totalClicks >= 500, type: 'click' },
-            { id: 5, name: '🌍 Перерождение', desc: 'Перейти в новый мир', target: 1, progress: 0, reward: 250, completed: false, type: 'prestige' }
+            { id: 5, name: '🌍 Перерождение', desc: 'Перейти в новый мир', target: 1, progress: 0, reward: 250, completed: false, type: 'prestige' },
+            { id: 6, name: '💎 Коллекционер', desc: 'Купить 5 любых бустов', target: 5, progress: Math.min(5, totalUpgradesBought), reward: 150, completed: totalUpgradesBought >= 5, type: 'goldUpgrade' },
+            { id: 7, name: '🔨 Трудоголик', desc: 'Сделать 2000 кликов', target: 2000, progress: Math.min(2000, totalClicks), reward: 200, completed: totalClicks >= 2000, type: 'click' },
+            { id: 8, name: '💰 Миллионер', desc: 'Накопить 100000 баллов', target: 100000, progress: Math.min(100000, balance), reward: 500, completed: balance >= 100000, type: 'balance' },
+            { id: 9, name: '🌟 Мастер миров', desc: 'Пройти 3 мира', target: 3, progress: Math.min(3, totalWorldsPassed), reward: 1000, completed: totalWorldsPassed >= 3, type: 'worldPass' },
+            { id: 10, name: '🏅 Легенда', desc: 'Открыть 20 телефонов', target: 20, progress: Math.min(20, totalPhonesUnlocked), reward: 750, completed: totalPhonesUnlocked >= 20, type: 'phone' },
+            { id: 11, name: '⚙️ Мега-фермер', desc: 'Накопить 1000 золота', target: 1000, progress: Math.min(1000, gold), reward: 300, completed: gold >= 1000, type: 'gold' }
         ];
         timeUntilReset = 300;
         saveGame();
@@ -408,6 +507,7 @@
         totalClicks++;
         
         updateQuestProgress('click', 1);
+        updateQuestProgress('gold', gold);
         updateBalanceQuest();
         
         saveGame();
@@ -420,7 +520,7 @@
     }
 
     function saveGame() {
-        const data = { balance, gold, clickPower, autoIncome, goldPerSecond, clickBoost, globalMultiplier, goldOnClick, currentWorld, currentPhoneIndex, totalClicks, quests, timeUntilReset, worlds: worlds.map(w => ({ completed: w.completed })), goldUpgrades: goldUpgrades.map(g => ({ count: g.count, price: g.price, unlocked: g.unlocked })) };
+        const data = { balance, gold, clickPower, autoIncome, goldPerSecond, clickBoost, globalMultiplier, goldOnClick, currentWorld, currentPhoneIndex, totalClicks, totalWorldsPassed, totalUpgradesBought, quests, timeUntilReset, worlds: worlds.map(w => ({ completed: w.completed })), goldUpgrades: goldUpgrades.map(g => ({ count: g.count, price: g.price, unlocked: g.unlocked })) };
         localStorage.setItem('iphoneClicker_save', JSON.stringify(data));
         if (ysdk) ysdk.savePlayerData(data).catch(e=>console.log);
     }
@@ -441,6 +541,8 @@
                 currentWorld = d.currentWorld || 0;
                 currentPhoneIndex = d.currentPhoneIndex || 0;
                 totalClicks = d.totalClicks || 0;
+                totalWorldsPassed = d.totalWorldsPassed || 0;
+                totalUpgradesBought = d.totalUpgradesBought || 0;
                 timeUntilReset = d.timeUntilReset || 300;
                 if (d.quests) quests = d.quests;
                 if (d.worlds) d.worlds.forEach((w, i) => { if(worlds[i]) worlds[i].completed = w.completed; });
@@ -458,15 +560,20 @@
             const w = worlds[i];
             const isActive = i === currentWorld;
             const isCompleted = w.completed;
-            html += `<div class="world-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-world="${i}">
+            html += `<div class="world-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" data-world="${i}" data-completed="${isCompleted}">
                         <div><span class="world-prefix">${w.prefix}</span> <span class="world-name">${w.name}</span></div>
-                        <div class="world-status">${isCompleted ? '✅ Пройден' : (isActive ? '📍 Текущий' : '🔒 Закрыт')}</div>
+                        <div class="world-status">${isCompleted ? '✅ ПРОЙДЕН' : (isActive ? '📍 ТЕКУЩИЙ' : '🔒 ЗАКРЫТ')}</div>
                     </div>`;
         }
         worldsList.innerHTML = html;
         
         document.querySelectorAll('.world-item').forEach(el => {
-            el.addEventListener('click', () => switchToWorld(parseInt(el.dataset.world)));
+            const isCompleted = el.dataset.completed === 'true';
+            if (!isCompleted) {
+                el.addEventListener('click', () => switchToWorld(parseInt(el.dataset.world)));
+            } else {
+                el.style.cursor = 'not-allowed';
+            }
         });
         
         if (worldBonusSpan) worldBonusSpan.innerText = getWorld().bonus;
@@ -481,7 +588,6 @@
     }
 
     function updateUI() {
-        if (balanceDisplay) balanceDisplay.innerText = Math.floor(balance);
         if (goldDisplay) goldDisplay.innerText = Math.floor(gold);
         
         recalcPhone();
@@ -489,10 +595,12 @@
         const world = getWorld();
         const phone = getPhone();
         
+        // Обновляем шкалу прогресса
+        updateProgressBar();
+        
         if (modelNameSpan) modelNameSpan.innerHTML = `${world.prefix} ${phone.name} <span style="font-size:0.7rem; background:#ff9f0a30; padding:2px 8px; border-radius:20px;">🏆 ${world.name}</span>`;
         if (modelImg) {
             modelImg.src = phone.image;
-            // Добавляем обработчик ошибки загрузки изображения
             modelImg.onerror = function() {
                 this.src = 'images/default_phone.jpg';
                 this.onerror = null;
@@ -502,8 +610,8 @@
         
         const next = getNextPhone();
         if (next && nextSpan) {
-            let prevThreshold = 500 * Math.pow(1.5, currentPhoneIndex);
-            let nextThreshold = 500 * Math.pow(1.5, currentPhoneIndex + 1);
+            let prevThreshold = getPhoneThreshold(currentPhoneIndex);
+            let nextThreshold = getPhoneThreshold(currentPhoneIndex + 1);
             let progress = ((balance - prevThreshold) / (nextThreshold - prevThreshold)) * 100;
             progress = Math.min(100, Math.max(0, progress));
             nextSpan.innerHTML = `→ ${next.name}<br><span style="font-size:0.7rem">📊 ${Math.floor(progress)}%</span>`;
@@ -574,6 +682,7 @@
     setInterval(() => {
         if (goldPerSecond > 0) {
             gold += goldPerSecond;
+            updateQuestProgress('gold', gold);
             saveGame();
             updateUI();
         }

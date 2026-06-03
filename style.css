@@ -88,8 +88,11 @@ body {
 }
 
 .world-item.completed {
-    opacity: 0.5;
+    opacity: 0.4;
     background: #161a22;
+    cursor: not-allowed !important;
+    filter: grayscale(0.5);
+    pointer-events: none;
 }
 
 .world-prefix {
@@ -149,7 +152,7 @@ body {
 }
 
 .store-header h1 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 800;
     text-align: center;
     background: linear-gradient(135deg, #ffb347, #ff8c00);
@@ -159,44 +162,99 @@ body {
     margin-bottom: 16px;
 }
 
-.row-balance {
+/* ВЕРХНЯЯ ПАНЕЛЬ - ТОЛЬКО ШКАЛА И ЗОЛОТО */
+.top-panel {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
+    justify-content: space-between;
+    gap: 16px;
     background: rgba(0, 0, 0, 0.35);
-    border-radius: 80px;
-    padding: 8px 20px;
-    margin-bottom: 16px;
+    border-radius: 60px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
 }
 
-.balance-box {
+/* КОНТЕЙНЕР ШКАЛЫ ПРОГРЕССА - теперь занимает всё доступное место */
+.progress-container {
+    flex: 1;
     background: rgba(0, 0, 0, 0.4);
+    border-radius: 40px;
+    padding: 8px 16px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #ffb86b;
+    margin-bottom: 6px;
+}
+
+.progress-info span:first-child,
+.progress-info span:last-child {
+    background: rgba(255,159,10,0.2);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.progress-bar-bg {
+    background: #2a2e36;
+    border-radius: 20px;
+    height: 12px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.progress-bar-fill {
+    background: linear-gradient(90deg, #ff9f0a, #ffcc44);
+    height: 100%;
+    width: 0%;
+    border-radius: 20px;
+    transition: width 0.2s ease;
+    box-shadow: 0 0 8px rgba(255,159,10,0.5);
+}
+
+.progress-stats {
+    text-align: center;
+    font-size: 0.65rem;
+    color: #8e9aaf;
+}
+
+.progress-stats span {
+    font-weight: 700;
+    color: #ffb347;
+}
+
+.gold-box {
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
-    padding: 5px 18px;
-    border-radius: 60px;
+    padding: 8px 18px;
+    border-radius: 50px;
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: 8px;
+    min-width: 100px;
+    justify-content: center;
 }
 
-.balance-label {
-    font-size: 1.1rem;
+.gold-label {
+    font-size: 1.2rem;
     font-weight: 600;
-    color: #ff9f0a;
 }
 
-.balance-value {
-    font-size: 1.8rem;
+.gold-value {
+    font-size: 1.6rem;
     font-weight: 800;
-    color: white;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255,215,0,0.5);
 }
 
 .iphone-click-area {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 16px 0;
+    margin: 10px 0;
     cursor: pointer;
 }
 
@@ -205,7 +263,7 @@ body {
     backdrop-filter: blur(8px);
     padding: 6px 22px;
     border-radius: 60px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #ffc285;
     margin-bottom: 12px;
@@ -220,7 +278,7 @@ body {
 .level-panel {
     background: rgba(0, 0, 0, 0.35);
     border-radius: 60px;
-    padding: 12px 20px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     margin: 8px 0;
@@ -229,23 +287,23 @@ body {
 .level-text {
     font-weight: 700;
     color: #ffb347;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 }
 
 .next-model {
     background: #232731;
-    padding: 5px 16px;
+    padding: 4px 14px;
     border-radius: 40px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #bac8dc;
     cursor: pointer;
 }
 
 .footer-note {
     text-align: center;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: #7e8b9f;
-    margin-top: 12px;
+    margin-top: 10px;
 }
 
 /* ПРАВАЯ КОЛОНКА - БУСТЫ И ЗАДАНИЯ */
@@ -480,8 +538,16 @@ body {
     .iphone-image {
         width: 140px;
     }
-    .balance-value {
-        font-size: 1.4rem;
+    .gold-value {
+        font-size: 1.2rem;
+    }
+    .top-panel {
+        flex-wrap: wrap;
+    }
+    .progress-container {
+        order: 1;
+        width: 100%;
+        margin-top: 8px;
     }
 }
 

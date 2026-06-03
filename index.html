@@ -27,25 +27,39 @@
                 <h1>IPHONE CLICKER</h1>
             </div>
 
-            <div class="row-balance">
-                <div class="balance-box">
-                    <span class="balance-label">Б</span>
-                    <span class="balance-value" id="balanceDisplay">0</span>
+            <!-- ВЕРХНЯЯ ПАНЕЛЬ: ТОЛЬКО ШКАЛА + ЗОЛОТО -->
+            <div class="top-panel">
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span id="currentPhoneName">iPhone 6</span>
+                        <span>→</span>
+                        <span id="nextPhoneName">iPhone 7</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span id="currentProgressAmount">0</span>
+                        <span>/</span>
+                        <span id="nextProgressNeeded">500</span>
+                        <span>📱</span>
+                    </div>
                 </div>
-                <div class="balance-box">
-                    <span class="balance-label">💰</span>
-                    <span class="balance-value" id="goldDisplay">0</span>
+                
+                <div class="gold-box">
+                    <span class="gold-label">💰</span>
+                    <span class="gold-value" id="goldDisplay">0</span>
                 </div>
             </div>
 
             <div class="iphone-click-area" id="clickerMain">
                 <div class="iphone-model-name" id="currentModelName">iPhone 6</div>
-                <img class="iphone-image" id="currentModelImage" src="images/iphone6.jpg" alt="iPhone" draggable="false">
+                <img class="iphone-image" id="currentModelImage" src="images/iphone/iphone_6.jpg" alt="iPhone" draggable="false">
             </div>
 
             <div class="level-panel">
                 <div class="level-text" id="levelDisplay">Мир iPhone (1/10)</div>
-                <div class="next-model" id="nextModelDisplay">→ iPhone 7</div>
+                <div class="next-model" id="nextModelDisplay">✨ ПЕРЕРОДИТЬСЯ</div>
             </div>
 
             <div class="footer-note">
