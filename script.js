@@ -5,45 +5,225 @@
     const worlds = [
         { 
             id: 0, name: 'Мир Xiaomi', prefix: '🤖', bonus: 1, requiredForNext: 30000, completed: false,
+            brand: 'xiaomi',
             phones: ['Mi 5', 'Mi 6', 'Mi 8', 'Mi 9', 'Mi 10', 'Mi 11', 'Poco F3', 'Xiaomi 12', 'Xiaomi 13', 'Xiaomi 14', 'Redmi Note 12', 'Xiaomi 14 Ultra', 'POCO X6 Pro'] 
         },
         { 
             id: 1, name: 'Мир Motorola', prefix: '🔊', bonus: 1.2, requiredForNext: 45000, completed: false,
+            brand: 'motorola',
             phones: ['Moto G', 'Moto X', 'Moto G4', 'Moto Z', 'Moto G6', 'Moto Z2', 'Moto G8', 'Moto Edge', 'Moto G100', 'Moto Edge 30', 'Moto Razr', 'Moto Edge 40', 'Moto ThinkPhone'] 
         },
         { 
             id: 2, name: 'Мир Nokia', prefix: '📞', bonus: 1.4, requiredForNext: 60000, completed: false,
+            brand: 'nokia',
             phones: ['Lumia 520', 'Lumia 630', 'Lumia 735', 'Lumia 830', 'Lumia 930', 'Lumia 950', 'Nokia 6', 'Nokia 8', 'Nokia 9', 'Nokia X20', 'Nokia G50', 'Nokia X30', 'Nokia Magic Max'] 
         },
         { 
             id: 3, name: 'Мир OnePlus', prefix: '⚡', bonus: 1.6, requiredForNext: 80000, completed: false,
+            brand: 'oneplus',
             phones: ['OnePlus One', 'OnePlus 2', 'OnePlus 3', 'OnePlus 5', 'OnePlus 6', 'OnePlus 7 Pro', 'OnePlus 8', 'OnePlus 9', 'OnePlus 10 Pro', 'OnePlus 11', 'OnePlus 12', 'OnePlus Open', 'OnePlus 13'] 
         },
         { 
             id: 4, name: 'Мир Google', prefix: '🔵', bonus: 1.8, requiredForNext: 100000, completed: false,
+            brand: 'google',
             phones: ['Pixel', 'Pixel 2', 'Pixel 3', 'Pixel 4', 'Pixel 5', 'Pixel 6', 'Pixel 7', 'Pixel 8', 'Pixel 9', 'Pixel Fold', 'Pixel 9 Pro', 'Pixel 10', 'Pixel 11 Pro'] 
         },
         { 
             id: 5, name: 'Мир iPhone', prefix: '🍎', bonus: 2.0, requiredForNext: 130000, completed: false,
+            brand: 'iphone',
             phones: ['iPhone 6', 'iPhone 7', 'iPhone 8', 'iPhone X', 'iPhone XR', 'iPhone 11', 'iPhone 12', 'iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 16e', 'iPhone 16', 'iPhone 17 Pro'] 
         },
         { 
             id: 6, name: 'Мир Samsung', prefix: '⭐', bonus: 2.3, requiredForNext: 160000, completed: false,
+            brand: 'samsung',
             phones: ['Galaxy S5', 'Galaxy S6', 'Galaxy S7', 'Galaxy S8', 'Galaxy S9', 'Galaxy S10', 'Galaxy S20', 'Galaxy S21', 'Galaxy S22', 'Galaxy S23', 'Galaxy S24', 'Galaxy Z Fold', 'Galaxy Z Flip'] 
         },
         { 
             id: 7, name: 'Мир Sony', prefix: '🎮', bonus: 2.6, requiredForNext: 200000, completed: false,
+            brand: 'sony',
             phones: ['Xperia Z', 'Xperia Z2', 'Xperia Z5', 'Xperia XZ', 'Xperia 1', 'Xperia 5', 'Xperia 1 II', 'Xperia 5 III', 'Xperia 1 IV', 'Xperia 5 IV', 'Xperia 1 V', 'Xperia Pro-I', 'Xperia 1 VI'] 
         },
         { 
             id: 8, name: 'Мир Huawei', prefix: '🌙', bonus: 3.0, requiredForNext: 250000, completed: false,
+            brand: 'huawei',
             phones: ['P8', 'P9', 'P10', 'P20 Pro', 'P30 Pro', 'Mate 20', 'P40 Pro', 'Mate 40 Pro', 'P50 Pro', 'Mate 50 Pro', 'P60 Pro', 'Mate 60 Pro', 'Pura 70 Ultra'] 
         },
         { 
             id: 9, name: 'Мир Legend', prefix: '👑', bonus: 4.0, requiredForNext: 500000, completed: false,
+            brand: 'legend',
             phones: ['Legend One', 'Legend Two', 'Legend Three', 'Legend Four', 'Legend Five', 'Legend Six', 'Legend Seven', 'Legend Eight', 'Legend Nine', 'Legend Ten', 'Legend Eleven', 'Legend Twelve', 'Legend Ultimate'] 
         }
     ];
+
+    // Функция для преобразования названия телефона в имя файла
+    function getPhoneFileName(phoneName, brand) {
+        // Специальные случаи для разных брендов
+        const specialCases = {
+            // iPhone
+            'iPhone 6': 'iphone_6.jpg',
+            'iPhone 7': 'iphone_7.jpg',
+            'iPhone 8': 'iphone_8.jpg',
+            'iPhone X': 'iphone_x.jpg',
+            'iPhone XR': 'iphone_xr.jpg',
+            'iPhone 11': 'iphone_11.jpg',
+            'iPhone 12': 'iphone_12.jpg',
+            'iPhone 13': 'iphone_13.jpg',
+            'iPhone 14': 'iphone_14.jpg',
+            'iPhone 15': 'iphone_15.jpg',
+            'iPhone 16e': 'iphone_16e.jpg',
+            'iPhone 16': 'iphone_16.jpg',
+            'iPhone 17 Pro': 'iphone_17_pro.jpg',
+            
+            // Samsung
+            'Galaxy S5': 'galaxy_s5.jpg',
+            'Galaxy S6': 'galaxy_s6.jpg',
+            'Galaxy S7': 'galaxy_s7.jpg',
+            'Galaxy S8': 'galaxy_s8.jpg',
+            'Galaxy S9': 'galaxy_s9.jpg',
+            'Galaxy S10': 'galaxy_s10.jpg',
+            'Galaxy S20': 'galaxy_s20.jpg',
+            'Galaxy S21': 'galaxy_s21.jpg',
+            'Galaxy S22': 'galaxy_s22.jpg',
+            'Galaxy S23': 'galaxy_s23.jpg',
+            'Galaxy S24': 'galaxy_s24.jpg',
+            'Galaxy Z Fold': 'galaxy_z_fold.jpg',
+            'Galaxy Z Flip': 'galaxy_z_flip.jpg',
+            
+            // Xiaomi
+            'Mi 5': 'mi_5.jpg',
+            'Mi 6': 'mi_6.jpg',
+            'Mi 8': 'mi_8.jpg',
+            'Mi 9': 'mi_9.jpg',
+            'Mi 10': 'mi_10.jpg',
+            'Mi 11': 'mi_11.jpg',
+            'Poco F3': 'poco_f3.jpg',
+            'Xiaomi 12': 'xiaomi_12.jpg',
+            'Xiaomi 13': 'xiaomi_13.jpg',
+            'Xiaomi 14': 'xiaomi_14.jpg',
+            'Redmi Note 12': 'redmi_note_12.jpg',
+            'Xiaomi 14 Ultra': 'xiaomi_14_ultra.jpg',
+            'POCO X6 Pro': 'poco_x6_pro.jpg',
+            
+            // Google
+            'Pixel': 'pixel.jpg',
+            'Pixel 2': 'pixel_2.jpg',
+            'Pixel 3': 'pixel_3.jpg',
+            'Pixel 4': 'pixel_4.jpg',
+            'Pixel 5': 'pixel_5.jpg',
+            'Pixel 6': 'pixel_6.jpg',
+            'Pixel 7': 'pixel_7.jpg',
+            'Pixel 8': 'pixel_8.jpg',
+            'Pixel 9': 'pixel_9.jpg',
+            'Pixel Fold': 'pixel_fold.jpg',
+            'Pixel 9 Pro': 'pixel_9_pro.jpg',
+            'Pixel 10': 'pixel_10.jpg',
+            'Pixel 11 Pro': 'pixel_11_pro.jpg',
+            
+            // OnePlus
+            'OnePlus One': 'oneplus_one.jpg',
+            'OnePlus 2': 'oneplus_2.jpg',
+            'OnePlus 3': 'oneplus_3.jpg',
+            'OnePlus 5': 'oneplus_5.jpg',
+            'OnePlus 6': 'oneplus_6.jpg',
+            'OnePlus 7 Pro': 'oneplus_7_pro.jpg',
+            'OnePlus 8': 'oneplus_8.jpg',
+            'OnePlus 9': 'oneplus_9.jpg',
+            'OnePlus 10 Pro': 'oneplus_10_pro.jpg',
+            'OnePlus 11': 'oneplus_11.jpg',
+            'OnePlus 12': 'oneplus_12.jpg',
+            'OnePlus Open': 'oneplus_open.jpg',
+            'OnePlus 13': 'oneplus_13.jpg',
+            
+            // Motorola
+            'Moto G': 'moto_g.jpg',
+            'Moto X': 'moto_x.jpg',
+            'Moto G4': 'moto_g4.jpg',
+            'Moto Z': 'moto_z.jpg',
+            'Moto G6': 'moto_g6.jpg',
+            'Moto Z2': 'moto_z2.jpg',
+            'Moto G8': 'moto_g8.jpg',
+            'Moto Edge': 'moto_edge.jpg',
+            'Moto G100': 'moto_g100.jpg',
+            'Moto Edge 30': 'moto_edge_30.jpg',
+            'Moto Razr': 'moto_razr.jpg',
+            'Moto Edge 40': 'moto_edge_40.jpg',
+            'Moto ThinkPhone': 'moto_thinkphone.jpg',
+            
+            // Nokia
+            'Lumia 520': 'lumia_520.jpg',
+            'Lumia 630': 'lumia_630.jpg',
+            'Lumia 735': 'lumia_735.jpg',
+            'Lumia 830': 'lumia_830.jpg',
+            'Lumia 930': 'lumia_930.jpg',
+            'Lumia 950': 'lumia_950.jpg',
+            'Nokia 6': 'nokia_6.jpg',
+            'Nokia 8': 'nokia_8.jpg',
+            'Nokia 9': 'nokia_9.jpg',
+            'Nokia X20': 'nokia_x20.jpg',
+            'Nokia G50': 'nokia_g50.jpg',
+            'Nokia X30': 'nokia_x30.jpg',
+            'Nokia Magic Max': 'nokia_magic_max.jpg',
+            
+            // Sony
+            'Xperia Z': 'xperia_z.jpg',
+            'Xperia Z2': 'xperia_z2.jpg',
+            'Xperia Z5': 'xperia_z5.jpg',
+            'Xperia XZ': 'xperia_xz.jpg',
+            'Xperia 1': 'xperia_1.jpg',
+            'Xperia 5': 'xperia_5.jpg',
+            'Xperia 1 II': 'xperia_1_ii.jpg',
+            'Xperia 5 III': 'xperia_5_iii.jpg',
+            'Xperia 1 IV': 'xperia_1_iv.jpg',
+            'Xperia 5 IV': 'xperia_5_iv.jpg',
+            'Xperia 1 V': 'xperia_1_v.jpg',
+            'Xperia Pro-I': 'xperia_pro_i.jpg',
+            'Xperia 1 VI': 'xperia_1_vi.jpg',
+            
+            // Huawei
+            'P8': 'p8.jpg',
+            'P9': 'p9.jpg',
+            'P10': 'p10.jpg',
+            'P20 Pro': 'p20_pro.jpg',
+            'P30 Pro': 'p30_pro.jpg',
+            'Mate 20': 'mate_20.jpg',
+            'P40 Pro': 'p40_pro.jpg',
+            'Mate 40 Pro': 'mate_40_pro.jpg',
+            'P50 Pro': 'p50_pro.jpg',
+            'Mate 50 Pro': 'mate_50_pro.jpg',
+            'P60 Pro': 'p60_pro.jpg',
+            'Mate 60 Pro': 'mate_60_pro.jpg',
+            'Pura 70 Ultra': 'pura_70_ultra.jpg',
+            
+            // Legend
+            'Legend One': 'legend_one.jpg',
+            'Legend Two': 'legend_two.jpg',
+            'Legend Three': 'legend_three.jpg',
+            'Legend Four': 'legend_four.jpg',
+            'Legend Five': 'legend_five.jpg',
+            'Legend Six': 'legend_six.jpg',
+            'Legend Seven': 'legend_seven.jpg',
+            'Legend Eight': 'legend_eight.jpg',
+            'Legend Nine': 'legend_nine.jpg',
+            'Legend Ten': 'legend_ten.jpg',
+            'Legend Eleven': 'legend_eleven.jpg',
+            'Legend Twelve': 'legend_twelve.jpg',
+            'Legend Ultimate': 'legend_ultimate.jpg'
+        };
+        
+        // Проверяем специальные случаи
+        if (specialCases[phoneName]) {
+            return specialCases[phoneName];
+        }
+        
+        // Если нет в specialCases, генерируем автоматически
+        return phoneName.toLowerCase().replace(/ /g, '_').replace(/-/g, '_') + '.jpg';
+    }
+
+    // Функция для получения пути к изображению телефона
+    function getPhoneImagePath(phoneName, brand) {
+        const fileName = getPhoneFileName(phoneName, brand);
+        return `images/${fileName}`;
+    }
 
     // ЗОЛОТЫЕ БУСТЫ
     let goldUpgrades = [
@@ -345,8 +525,18 @@
         recalcPhone();
         
         const world = getWorld();
-        if (modelNameSpan) modelNameSpan.innerHTML = `${world.prefix} ${getPhoneName()} <span style="font-size:0.7rem; background:#ff9f0a30; padding:2px 8px; border-radius:20px;">🏆 ${world.name}</span>`;
-        if (modelImg) modelImg.src = `images/${getPhoneName().toLowerCase().replace(/ /g,'_')}.jpg`;
+        const phoneName = getPhoneName();
+        const phoneImagePath = getPhoneImagePath(phoneName, world.brand);
+        
+        if (modelNameSpan) modelNameSpan.innerHTML = `${world.prefix} ${phoneName} <span style="font-size:0.7rem; background:#ff9f0a30; padding:2px 8px; border-radius:20px;">🏆 ${world.name}</span>`;
+        if (modelImg) {
+            modelImg.src = phoneImagePath;
+            // Добавляем обработчик ошибки загрузки изображения
+            modelImg.onerror = function() {
+                this.src = 'images/default_phone.jpg';
+                this.onerror = null;
+            };
+        }
         if (levelSpan) levelSpan.innerHTML = `${world.name} ${world.prefix} (${currentWorld+1}/${worlds.length}) ✨ x${world.bonus} | 💪 x${globalMultiplier.toFixed(1)} | 💎 x${clickBoost}`;
         
         const next = getNextPhone();
