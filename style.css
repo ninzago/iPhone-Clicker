@@ -6,7 +6,7 @@
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 html, body {
@@ -14,7 +14,6 @@ html, body {
     height: 100%;
     overflow: hidden;
     position: fixed;
-    touch-action: pan-x pan-y;
 }
 
 body {
@@ -25,200 +24,154 @@ body {
     padding: 12px;
 }
 
-/* ГЛАВНЫЙ КОНТЕЙНЕР — ДВЕ КОЛОНКИ */
+/* ТРИ КОЛОНКИ */
 .game-layout {
-    max-width: 1100px;
+    max-width: 1300px;
     width: 100%;
     height: 95vh;
     display: grid;
-    grid-template-columns: 1fr 240px;
-    gap: 16px;
-    background: transparent;
+    grid-template-columns: 200px 1fr 280px;
+    gap: 12px;
 }
 
-/* ОСНОВНАЯ ОБЛАСТЬ (ЛЕВАЯ) */
-.main-area {
-    background: rgba(28, 32, 40, 0.75);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border-radius: 48px;
-    padding: 20px 18px 22px;
-    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
-/* БОКОВОЕ МЕНЮ (ПРАВАЯ ПАНЕЛЬ) */
-.upgrades-sidebar {
+/* ЛЕВАЯ КОЛОНКА - МИРЫ */
+.worlds-sidebar {
     background: rgba(20, 24, 30, 0.85);
     backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
     border-radius: 40px;
-    padding: 18px 12px;
-    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    padding: 16px 12px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-.sidebar-header {
-    font-size: 1.3rem;
+.worlds-header {
+    font-size: 1.2rem;
     font-weight: 700;
     text-align: center;
     padding-bottom: 12px;
     margin-bottom: 12px;
-    border-bottom: 2px solid rgba(255, 159, 10, 0.4);
+    border-bottom: 2px solid #ff9f0a;
     color: #ff9f0a;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    letter-spacing: -0.3px;
 }
 
-.sidebar-header span {
-    font-size: 1.5rem;
-}
-
-/* СПИСОК УЛУЧШЕНИЙ (вертикальный скролл) */
-.shop-list {
+.worlds-list {
     flex: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-right: 4px;
+    gap: 8px;
 }
 
-.shop-list::-webkit-scrollbar {
-    width: 4px;
-}
-
-.shop-list::-webkit-scrollbar-track {
-    background: #2a2e36;
-    border-radius: 10px;
-}
-
-.shop-list::-webkit-scrollbar-thumb {
-    background: #ff9f0a;
-    border-radius: 10px;
-}
-
-/* КАРТОЧКА УЛУЧШЕНИЯ (вертикальная) */
-.upgrade-card {
+.world-item {
     background: #1e222a;
-    border-radius: 24px;
-    padding: 12px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: all 0.2s ease;
+    border-radius: 16px;
+    padding: 10px;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: all 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.upgrade-card:active {
-    transform: scale(0.97);
+.world-item:hover {
     background: #2a2f38;
+    transform: scale(1.02);
 }
 
-.upgrade-card.locked {
+.world-item.active {
+    background: #ff9f0a20;
+    border: 1px solid #ff9f0a;
+}
+
+.world-item.completed {
     opacity: 0.5;
-    filter: grayscale(0.4);
-    cursor: default;
-    pointer-events: none;
     background: #161a22;
 }
 
-.upgrade-card.maxed {
-    background: #2f2a20;
-    border: 1px solid #ffb347;
-    box-shadow: 0 0 8px rgba(255, 159, 10, 0.3);
-    cursor: default;
-    pointer-events: none;
+.world-prefix {
+    font-size: 1.1rem;
 }
 
-.upgrade-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.upgrade-name {
-    font-size: 0.9rem;
+.world-name {
+    font-size: 0.8rem;
     font-weight: 600;
     color: #eef2ff;
-    letter-spacing: -0.2px;
 }
 
-.upgrade-badge {
-    font-size: 0.65rem;
-    background: rgba(255, 159, 10, 0.2);
-    display: inline-block;
-    width: fit-content;
-    padding: 2px 8px;
-    border-radius: 50px;
-    color: #ffb86b;
+.world-status {
+    font-size: 0.6rem;
+    color: #ffd700;
+    margin-top: 4px;
 }
 
-.upgrade-price {
-    font-weight: 800;
-    font-size: 0.85rem;
-    color: #ff9f0a;
+.prestige-info {
     background: rgba(0, 0, 0, 0.4);
-    padding: 5px 12px;
-    border-radius: 30px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    border-radius: 20px;
+    padding: 12px;
+    text-align: center;
+    margin-top: 12px;
 }
 
-.upgrade-price::before {
-    content: "Б";
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #ffb347;
+.prestige-bonus {
+    font-size: 0.8rem;
+    color: #ffd700;
+    margin-bottom: 8px;
 }
 
-.max-label {
+.prestige-btn {
+    background: linear-gradient(145deg, #ff9f0a, #e67e00);
+    border: none;
+    border-radius: 40px;
+    padding: 8px;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #ffd966;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 5px 12px;
-    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    width: 100%;
 }
 
-/* ЗАГОЛОВОК И БАЛАНС */
+.prestige-btn:active {
+    transform: scale(0.97);
+}
+
+/* ЦЕНТРАЛЬНАЯ КОЛОНКА - ИГРА */
+.main-area {
+    background: rgba(28, 32, 40, 0.75);
+    backdrop-filter: blur(24px);
+    border-radius: 48px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
 .store-header h1 {
-    font-size: 1.9rem;
+    font-size: 1.8rem;
     font-weight: 800;
     text-align: center;
     background: linear-gradient(135deg, #ffb347, #ff8c00);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    margin-bottom: 14px;
-    letter-spacing: -0.5px;
+    margin-bottom: 16px;
 }
 
-/* Строка баланса — теперь по центру */
 .row-balance {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 12px;
     background: rgba(0, 0, 0, 0.35);
     border-radius: 80px;
-    padding: 6px 20px;
+    padding: 8px 20px;
     margin-bottom: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .balance-box {
-    background: #00000044;
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
     padding: 5px 18px;
     border-radius: 60px;
@@ -228,53 +181,22 @@ body {
 }
 
 .balance-label {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #ff9f0a;
 }
 
 .balance-value {
-    font-size: 1.9rem;
+    font-size: 1.8rem;
     font-weight: 800;
     color: white;
-    line-height: 1;
 }
 
-.auto-row {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 60px;
-    padding: 12px 20px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.auto-label {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: #b9c3d4;
-}
-
-.auto-label span {
-    color: #ff9f0a;
-    font-weight: 800;
-    font-size: 1.2rem;
-}
-
-.auto-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #5a9eff;
-}
-
-/* АЙФОН — анимация сжатия и возврата */
 .iphone-click-area {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 8px 0 18px;
+    margin: 16px 0;
     cursor: pointer;
 }
 
@@ -287,54 +209,224 @@ body {
     font-weight: 600;
     color: #ffc285;
     margin-bottom: 12px;
-    border: 1px solid #ff9f0a30;
 }
 
 .iphone-image {
     width: 180px;
-    border-radius: 38px;
-    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
-    background: #1a1e26;
-    padding: 8px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    pointer-events: none;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5));
     transition: transform 0.08s ease;
 }
 
-/* УРОВНИ + ПРОГРЕСС */
 .level-panel {
     background: rgba(0, 0, 0, 0.35);
     border-radius: 60px;
     padding: 12px 20px;
     display: flex;
     justify-content: space-between;
-    margin-top: 8px;
-    margin-bottom: 12px;
-    align-items: center;
+    margin: 8px 0;
 }
 
 .level-text {
     font-weight: 700;
     color: #ffb347;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .next-model {
     background: #232731;
     padding: 5px 16px;
     border-radius: 40px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #bac8dc;
+    cursor: pointer;
 }
 
 .footer-note {
     text-align: center;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #7e8b9f;
+    margin-top: 12px;
+}
+
+/* ПРАВАЯ КОЛОНКА - БУСТЫ И ЗАДАНИЯ */
+.upgrades-sidebar {
+    background: rgba(20, 24, 30, 0.85);
+    backdrop-filter: blur(24px);
+    border-radius: 40px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 60px;
+    padding: 4px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    border-radius: 40px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #a8aeb7;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #ff9f0a;
+    color: #1a1e26;
+}
+
+.tab-content {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стили для бустов */
+.shop-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.upgrade-card {
+    background: #1e222a;
+    border-radius: 20px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.upgrade-card:active {
+    transform: scale(0.97);
+}
+
+.upgrade-card.locked {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.upgrade-card.maxed {
+    background: #2f2a20;
+    border-color: #ffb347;
+    pointer-events: none;
+}
+
+.upgrade-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #eef2ff;
+}
+
+.upgrade-badge {
+    font-size: 0.6rem;
+    background: rgba(255, 159, 10, 0.2);
+    padding: 2px 8px;
+    border-radius: 50px;
+    color: #ffb86b;
+}
+
+.upgrade-price {
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: #ff9f0a;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 10px;
+    border-radius: 30px;
+}
+
+.max-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #ffd966;
+}
+
+/* Стили для заданий */
+.quests-timer {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 40px;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffd700;
+    margin-bottom: 12px;
+}
+
+.quests-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.quest-item {
+    background: #1e222a;
+    border-radius: 16px;
+    padding: 12px;
+}
+
+.quest-item.completed {
+    opacity: 0.5;
+    background: #161a22;
+}
+
+.quest-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffd700;
+    margin-bottom: 4px;
+}
+
+.quest-desc {
+    font-size: 0.7rem;
+    color: #a8aeb7;
+}
+
+.quest-progress-bar {
+    background: #2a2e36;
+    border-radius: 10px;
+    height: 6px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.quest-progress-fill {
+    background: #ff9f0a;
+    height: 6px;
+    border-radius: 10px;
+}
+
+.quest-reward {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffd700;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 10px;
+    border-radius: 30px;
+    display: inline-block;
     margin-top: 8px;
 }
 
-/* УВЕДОМЛЕНИЕ О КОМПЛИТЕ */
+/* Уведомление */
 .notification {
     position: fixed;
     top: 0;
@@ -347,12 +439,10 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 2000;
-    transition: opacity 0.25s;
 }
 
 .notification.hidden {
-    opacity: 0;
-    pointer-events: none;
+    display: none;
 }
 
 .notification-content {
@@ -361,8 +451,6 @@ body {
     padding: 30px 24px;
     max-width: 320px;
     text-align: center;
-    border: 1px solid #ff9f0a40;
-    box-shadow: 0 25px 40px black;
     position: relative;
 }
 
@@ -375,35 +463,19 @@ body {
     cursor: pointer;
 }
 
-.notification-content h2 {
-    color: #ff9f0a;
-    margin: 8px 0 12px;
-}
-
 .thanks-text {
     background: #ff9f0a20;
     display: inline-block;
     padding: 8px 18px;
     border-radius: 40px;
     margin-top: 12px;
-    font-weight: 500;
 }
 
-/* АДАПТАЦИЯ ПОД МАЛЕНЬКИЕ ЭКРАНЫ */
-@media (max-width: 680px) {
+/* Адаптация */
+@media (max-width: 900px) {
     .game-layout {
-        grid-template-columns: 1fr 180px;
-        gap: 10px;
-    }
-    .upgrade-card {
-        padding: 8px 8px;
-        flex-direction: column;
-        align-items: flex-start;
+        grid-template-columns: 160px 1fr 240px;
         gap: 8px;
-    }
-    .upgrade-price, .max-label {
-        width: 100%;
-        justify-content: center;
     }
     .iphone-image {
         width: 140px;
@@ -413,14 +485,11 @@ body {
     }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 700px) {
     .game-layout {
-        grid-template-columns: 1fr 140px;
+        grid-template-columns: 1fr;
     }
-    .upgrade-name {
-        font-size: 0.7rem;
-    }
-    .sidebar-header {
-        font-size: 1rem;
+    .worlds-sidebar {
+        display: none;
     }
 }

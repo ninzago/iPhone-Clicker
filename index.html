@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html id="gameRoot">
 <head>
-    <!-- Локальный SDK loader -->
     <script src="sdk.js"></script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iPhone Clicker — Боковое меню</title>
+    <title>iPhone Clicker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="game-layout">
-        <!-- ОСНОВНАЯ ИГРОВАЯ ЗОНА (ЛЕВАЯ) -->
+        <!-- ЛЕВАЯ КОЛОНКА - МИРЫ -->
+        <div class="worlds-sidebar">
+            <div class="worlds-header">
+                <span>🌍</span> МИРЫ <span>🗺️</span>
+            </div>
+            <div class="worlds-list" id="worldsList"></div>
+            <div class="prestige-info">
+                <div class="prestige-bonus">✨ Бонус: x<span id="worldBonus">1</span></div>
+                <button class="prestige-btn" id="prestigeBtn" style="display:none">🌟 ПЕРЕРОДИТЬСЯ</button>
+            </div>
+        </div>
+
+        <!-- ЦЕНТРАЛЬНАЯ КОЛОНКА - ИГРА -->
         <div class="main-area">
             <div class="store-header">
-                <h1 id="gameTitle">IPHONE CLICKER</h1>
+                <h1>IPHONE CLICKER</h1>
             </div>
 
-            <!-- Строка баланса (кнопка x2 удалена) -->
             <div class="row-balance">
                 <div class="balance-box">
-                    <span class="balance-label" id="balanceLabel">Б</span>
+                    <span class="balance-label">Б</span>
                     <span class="balance-value" id="balanceDisplay">0</span>
                 </div>
-            </div>
-
-            <div class="auto-row">
-                <div class="auto-label" id="autoLabel">⏱ Б. Сек. <span id="autoIncomeDisplay">0</span></div>
-                <div class="auto-value" id="autoRateDisplay">0/сек</div>
+                <div class="balance-box">
+                    <span class="balance-label">💰</span>
+                    <span class="balance-value" id="goldDisplay">0</span>
+                </div>
             </div>
 
             <div class="iphone-click-area" id="clickerMain">
@@ -36,63 +44,47 @@
             </div>
 
             <div class="level-panel">
-                <div class="level-text" id="levelDisplay">Уровень 1</div>
-                <div class="next-model" id="nextModelDisplay">→ iPhone 6s</div>
+                <div class="level-text" id="levelDisplay">Мир iPhone (1/10)</div>
+                <div class="next-model" id="nextModelDisplay">→ iPhone 7</div>
             </div>
 
-            <div class="footer-note" id="footerNote">
-                кликай по айфону — копи на новый уровень
+            <div class="footer-note">
+                👆 кликай по айфону | ⭐ выполняй задания | 💎 покупай бусты
             </div>
         </div>
 
-        <!-- БОКОВОЕ МЕНЮ УЛУЧШЕНИЙ (ПРАВАЯ ЧАСТЬ) -->
+        <!-- ПРАВАЯ КОЛОНКА - БУСТЫ И ЗАДАНИЯ -->
         <div class="upgrades-sidebar">
-            <div class="sidebar-header">
-                <span>⚡</span> УЛУЧШЕНИЯ <span>🛠️</span>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="gold">💰 БУСТЫ</button>
+                <button class="tab-btn" data-tab="quests">⭐ ЗАДАНИЯ</button>
             </div>
-            <div class="shop-list" id="shopList">
-                <!-- сюда будут динамически добавляться карточки улучшений -->
+
+            <div class="tab-content active" id="tab-gold">
+                <div class="shop-list" id="goldShopList"></div>
+            </div>
+
+            <div class="tab-content" id="tab-quests">
+                <div class="quests-timer" id="questsTimer">🔄 Новые задания через: --:--</div>
+                <div class="quests-list" id="questsList"></div>
             </div>
         </div>
     </div>
 
-    <!-- Уведомление о завершении игры -->
     <div id="completionNotification" class="notification hidden">
         <div class="notification-content">
             <span class="close-btn" id="closeNotification">&times;</span>
-            <h2>🎉 Поздравляем!</h2>
-            <p>Вы достигли последней модели — <strong>iPhone 17 Pro</strong>!</p>
-            <p>Спасибо за прохождение!</p>
-            <div class="contacts">
-                <span class="thanks-text">✨ Спасибо за игру! ✨</span>
-            </div>
+            <h2>🎉 ПОЗДРАВЛЯЕМ!</h2>
+            <p>Вы прошли ВСЕ МИРЫ!</p>
+            <p>Вы — настоящая ЛЕГЕНДА!</p>
+            <div class="thanks-text">✨ Спасибо за игру! ✨</div>
         </div>
     </div>
 
     <script src="script.js"></script>
-    
-    <!-- Фикс для i18n: устанавливаем язык в HTML-тег -->
     <script>
-        function setHtmlLang(lang) {
-            if (lang && document.documentElement) {
-                document.documentElement.lang = lang;
-                console.log('🌐 HTML lang set to:', lang);
-            }
-        }
-        
         if (window.ysdk) {
-            try {
-                const lang = window.ysdk.environment.i18n.lang;
-                setHtmlLang(lang);
-            } catch(e) {}
-        } else {
-            const checkInterval = setInterval(() => {
-                if (window.ysdk && window.ysdk.environment) {
-                    clearInterval(checkInterval);
-                    const lang = window.ysdk.environment.i18n.lang;
-                    setHtmlLang(lang);
-                }
-            }, 100);
+            try { document.documentElement.lang = window.ysdk.environment.i18n.lang; } catch(e) {}
         }
     </script>
 </body>
